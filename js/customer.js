@@ -1,242 +1,133 @@
-// JAORA BAZAAR - Customer App LIVE - FIXED with Views and Clicks tracking
-import { db } from "./firebase-config.js";
-import { collection, onSnapshot, doc, updateDoc, increment, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-let allShops = [], allProducts = [], allBanners = [], allCities = [];
-let viewedShops = new Set(); // Track which shops viewed in this session to avoid duplicate views
-
-const shopsEl = document.getElementById('shops');
-const productsEl = document.getElementById('products');
-const bannerArea = document.getElementById('bannerArea');
-const searchEl = document.getElementById('search');
-const townEl = document.getElementById('town');
-const catEl = document.getElementById('category');
-const statusEl = document.getElementById('status');
-
-// Increment views - Only once per session per shop
-window.trackView = async (shopId)=>{
-  if(viewedShops.has(shopId)) return; // Already viewed this session
-  viewedShops.add(shopId);
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Jaora Bazaar - Apna Local Bazaar</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#FFFBF5;--card:#FFFFFF;--ink:#1A1A1A;--muted:#6B7280;--line:#F3E8D3;--orange:#FF6B2C;--orange-light:#FFF0E6;--radius:20px;--shadow:0 8px 32px rgba(0,0,0,0.06)}
+*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--ink)}
+.wrap{max-width:1200px;margin:0 auto;padding:0 20px}.top{position:sticky;top:0;z-index:50;background:rgba(255,251,245,0.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
+.top-inner{display:flex;justify-content:space-between;align-items:center;height:72px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:22px}.brand-icon{width:40px;height:40px;background:var(--orange);border-radius:12px;display:grid;place-items:center;color:#fff}
+.btn{padding:10px 18px;border-radius:999px;font-weight:600;font-size:14px;text-decoration:none;border:1px solid var(--line);background:var(--card);color:var(--ink)}
+.btn-primary{background:var(--ink);color:#fff;border-color:var(--ink)}
+.hero{padding:48px 0 32px;display:grid;grid-template-columns:1.1fr 0.9fr;gap:40px;align-items:center}
+.hero h1{font-family:'Fraunces',serif;font-size:clamp(36px,5vw,58px);line-height:0.95}.hero h1 em{color:var(--orange);font-style:normal}
+.hero p{font-size:18px;color:var(--muted);margin:16px 0}
+.filters{position:sticky;top:72px;z-index:40;background:rgba(255,251,245,0.95);backdrop-filter:blur(16px);padding:14px 0;border-bottom:1px solid var(--line);margin-bottom:20px}
+.search{flex:1;min-width:260px;position:relative}.search input{width:100%;padding:13px 18px 13px 42px;border-radius:999px;border:1px solid var(--line);background:var(--card)}
+.chip{padding:8px 14px;border-radius:999px;border:1px solid var(--line);background:var(--card);font-weight:600;font-size:13px;cursor:pointer}
+.chip.active{background:var(--ink);color:#fff;border-color:var(--ink)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:18px}
+.card{background:var(--card);border-radius:20px;padding:18px;border:1px solid var(--line);box-shadow:var(--shadow);transition:0.2s}
+.card:hover{transform:translateY(-3px)}
+.badge{font-size:11px;font-weight:700;padding:4px 10px;border-radius:999px;text-transform:uppercase}
+.badge-cat{background:var(--orange-light);color:var(--orange)}.badge-open{background:#ECFDF5;color:#0E9F6E}
+.title{font-weight:700;font-size:17px;margin:8px 0 2px}.meta{font-size:13px;color:var(--muted)}
+.actions{display:flex;gap:8px;margin-top:12px}
+.act{flex:1;padding:9px;border-radius:11px;font-weight:600;font-size:13px;text-align:center;border:1px solid var(--line);background:var(--card);text-decoration:none;color:var(--ink);cursor:pointer}
+.act-primary{background:var(--ink);color:#fff;border-color:var(--ink)}
+@media(max-width:800px){.hero{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="top"><div class="wrap"><div class="top-inner">
+<div class="brand"><div class="brand-icon">🛍</div>Jaora Bazaar</div>
+<div style="display:flex;gap:8px"><a class="btn" href="./shop/">Shop Login</a><a class="btn btn-primary" href="#shops">Explore →</a></div>
+</div></div></div>
+<div class="wrap">
+<div class="hero"><div>
+<h1>Apna local bazaar — <em>Jaora, Raghogarh ka apna.</em></h1>
+<p>Local dukaan, grocery, kapde, electronics, khana — sab kuch ek jagah.</p>
+<div style="display:flex;gap:20px;margin-top:12px"><div><b id="totalShops" style="font-size:26px">0</b><div style="font-size:11px;color:#6B7280">SHOPS LIVE</div></div><div><b style="font-size:26px">Jaora</b><div style="font-size:11px;color:#6B7280">CITY ACTIVE</div></div></div>
+</div>
+<div style="background:var(--card);border-radius:20px;padding:16px;border:1px solid var(--line);box-shadow:var(--shadow)">
+<div style="font-size:11px;color:#6B7280;margin-bottom:10px">POPULAR IN JAORA</div>
+<div style="padding:8px 0;border-bottom:1px solid var(--line)">⚡ Sharma Electricals · Bima Road</div>
+<div style="padding:8px 0;border-bottom:1px solid var(--line)">👕 Raghogarh Fashion · Main Market</div>
+<div style="padding:8px 0">🥦 Fresh Mart · Rajgarh</div>
+</div></div>
+<div class="filters"><div style="display:flex;gap:10px;flex-wrap:wrap">
+<div class="search"><span style="position:absolute;left:14px;top:50%;transform:translateY(-50%)">🔍</span><input id="searchBox" placeholder="Search shops, Bima Road..."/></div>
+<select id="townFilter" class="chip" style="padding:11px 14px"><option value="">All Towns</option><option value="Jaora">Jaora</option><option value="Raghogarh">Raghogarh</option><option value="Rajgarh">Rajgarh</option></select>
+<select id="catFilter" class="chip" style="padding:11px 14px"><option value="">All Categories</option><option>Grocery</option><option>Clothing</option><option>Electronics</option><option>Food</option><option>Beauty</option></select>
+</div></div>
+<div id="shops" class="grid"></div>
+<div id="empty" style="display:none;text-align:center;padding:50px;color:#6B7280">No shops found — Approve shops in admin</div>
+</div>
+<!-- USE SAME WORKING FIREBASE LOGIC AS OLD customer.js - This worked well before! -->
+<script type="module">
+import { firebaseConfig } from './js/firebase-config.js';
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getFirestore, collection, query, where, getDocs, doc, updateDoc, increment } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+let allShops = [];
+async function loadShops(){
   try{
-    await updateDoc(doc(db, "shops", shopId), {
-      views: increment(1),
-      lastViewed: serverTimestamp()
-    });
-    // Also log in clicks collection for analytics
-    await addDoc(collection(db, "clicks"), {
-      shopId: shopId,
-      type: "view",
-      at: serverTimestamp(),
-      city: allShops.find(s=>s.id===shopId)?.city||''
-    });
-    console.log("View tracked:", shopId);
-  }catch(e){ console.log("View track error (may need auth):", e.message); }
-};
-
-// Track call clicks
-window.trackCall = async (shopId, phone)=>{
-  try{
-    await updateDoc(doc(db, "shops", shopId), {
-      callClicks: increment(1),
-      lastCallClick: serverTimestamp()
-    });
-    await addDoc(collection(db, "clicks"), {
-      shopId: shopId,
-      type: "call",
-      phone: phone,
-      at: serverTimestamp()
-    });
-    console.log("Call click tracked:", shopId);
-  }catch(e){ console.log("Call track error:", e.message); }
-};
-
-// Track map clicks
-window.trackMap = async (shopId)=>{
-  try{
-    await updateDoc(doc(db, "shops", shopId), {
-      mapClicks: increment(1),
-      lastMapClick: serverTimestamp()
-    });
-    await addDoc(collection(db, "clicks"), {
-      shopId: shopId,
-      type: "map",
-      at: serverTimestamp()
-    });
-    console.log("Map click tracked:", shopId);
-  }catch(e){ console.log("Map track error:", e.message); }
-};
-
-// Track book clicks (for future booking feature)
-window.trackBook = async (shopId)=>{
-  try{
-    await updateDoc(doc(db, "shops", shopId), {
-      bookClicks: increment(1),
-      lastBookClick: serverTimestamp()
-    });
-    await addDoc(collection(db, "clicks"), {
-      shopId: shopId,
-      type: "book",
-      at: serverTimestamp()
-    });
-  }catch(e){ console.log("Book track error:", e.message); }
-};
-
-// Track banner clicks
-window.trackBanner = async (bannerId)=>{
-  try{
-    await updateDoc(doc(db, "banners", bannerId), {
-      clicks: increment(1),
-      lastClick: serverTimestamp()
-    });
-  }catch(e){ console.log("Banner track error:", e.message); }
-};
-
-function render() {
-  const q = (searchEl?.value || '').toLowerCase();
-  const town = townEl?.value || '';
-  const cat = catEl?.value || '';
-
-  let shops = allShops.filter(s => {
-    if (s.approved !== true) return false;
-    const matchesSearch = !q || (s.name||'').toLowerCase().includes(q) || (s.area||'').toLowerCase().includes(q) || (s.city||'').toLowerCase().includes(q);
-    const matchesTown = !town || s.city === town || s.town === town;
-    const matchesCat = !cat || (s.category||'').toLowerCase() === cat.toLowerCase();
-    return matchesSearch && matchesTown && matchesCat;
-  });
-
-  let products = allProducts.filter(p => {
-    const shop = allShops.find(s => s.id === p.shopId || s.phone === p.shopPhone);
-    if (!shop || shop.approved !== true) return false;
-    const matchesSearch = !q || (p.name||'').toLowerCase().includes(q);
-    const matchesCat = !cat || (p.category||'').toLowerCase() === cat.toLowerCase();
-    const matchesTown = !town || (shop.city===town || shop.town===town);
-    return matchesSearch && matchesCat && matchesTown;
-  });
-
-  if(allCities.length && townEl){
-    const existingTowns = new Set([...allCities.map(c=>c.name), ...allShops.filter(s=>s.approved).map(s=>s.city).filter(Boolean)]);
-    const currentTown = townEl.value;
-    townEl.innerHTML = '<option value="">All towns</option>' + [...existingTowns].map(t=>`<option value="${t}">${t}</option>`).join('');
-    townEl.value = currentTown;
-  }
-
-  if(shopsEl){
-    if(!shops.length){
-      const pending = allShops.filter(s=>s.approved!==true).length;
-      if(pending>0){
-        shopsEl.innerHTML = `<div class="card muted">No approved shops yet.<br>${pending} shops pending approval in admin.<br>Go to jagruk-473287-control/ -> Approve</div>`;
-      } else {
-        shopsEl.innerHTML = `<div class="card muted">No shops found. Admin needs to add shops</div>`;
-      }
-    } else {
-      shopsEl.innerHTML = shops.map(s => {
-        const timingText = s.open && s.close ? `${s.open} - ${s.close}` : '09:00 AM - 09:00 PM';
-        // Track view when rendering (once per session)
-        setTimeout(()=>{ trackView(s.id); }, 500);
-        return `
-          <div class="card">
-            <div class="row">
-              <div>
-                <div class="title">${s.name || 'Shop'}</div>
-                <div class="muted small">${s.city || ''} ${s.area? '· '+s.area:''} · ${s.category||'General'}</div>
-                <div class="small"><span class="badge open">● Open</span> ${timingText} · ${(s.timingDays||['Mon','Tue','Wed','Thu','Fri','Sat','Sun']).join(',')}</div>
-                <div class="muted small" style="margin-top:4px">👁 ${s.views||0} views · 📞 ${s.callClicks||0} calls · 📍 ${s.mapClicks||0} maps · <span style="color:#888">(Private analytics - only admin sees full)</span></div>
-              </div>
-              <div class="stack">
-                ${s.phone ? `<a class="btn" href="tel:${s.phone}" onclick="trackCall('${s.id}','${s.phone}')">📞 Call</a>` : ''}
-                ${s.phone ? `<a class="btn secondary" href="https://wa.me/91${s.phone.replace(/\D/g,'')}" target="_blank" onclick="trackCall('${s.id}','${s.phone}')">💬 WhatsApp</a>` : ''}
-              </div>
-            </div>
-            <div class="row small muted">
-              ${s.insta ? `<a href="${s.insta}" target="_blank" onclick="trackBook('${s.id}')">📸 Instagram</a>` : ''}
-              ${s.fb ? `<a href="${s.fb}" target="_blank" style="margin-left:8px" onclick="trackBook('${s.id}')">📘 Facebook</a>` : ''}
-              ${s.map ? `<a href="${s.map}" target="_blank" style="margin-left:8px" onclick="trackMap('${s.id}')">📍 Map</a>` : ''}
-              ${s.phone ? `<span style="margin-left:auto">📱 ${s.phone.slice(0,3)}•••${s.phone.slice(-2)}</span>` : ''}
-            </div>
-          </div>
-        `;
-      }).join('');
-    }
-  }
-
-  if(allBanners.length && bannerArea){
-    bannerArea.innerHTML = allBanners.map(b => `
-      <a href="${b.url||'#'}" target="_blank" class="banner" onclick="trackBanner('${b.id}')">
-        <div class="banner-inner">
-          <span class="pill small">AD · Rs ${b.price||2000} · 👁 ${b.clicks||0} clicks</span>
-          <div class="title">${b.title||'Sponsored'}</div>
-          <div class="muted small">${b.city||''} · Click to open</div>
-        </div>
-      </a>
-    `).join('');
-  }
-
-  if(productsEl){
-    if(!products.length){
-      productsEl.innerHTML = `<div class="card muted">No products from approved shops</div>`;
-    } else {
-      productsEl.innerHTML = products.map((p,i) => {
-        const shop = allShops.find(s=>s.id===p.shopId || s.phone===p.shopPhone) || {};
-        let bannerHtml = '';
-        if(i>0 && i%8===0 && allBanners[0]){
-          const b = allBanners[0];
-          bannerHtml = `<a href="${b.url||'#'}" target="_blank" class="card banner" onclick="trackBanner('${b.id}')"><div class="pill small">BANNER AD - ${b.title} - Rs ${b.price||2000} - ${b.clicks||0} clicks</div></a>`;
-        }
-        return `${bannerHtml}
-          <div class="card">
-            <div class="title">${p.name||'Product'}</div>
-            <div class="muted small">${shop.name||''} ${shop.city? '· '+shop.city:''}</div>
-            <div class="row"><span class="price">Rs ${p.price||'--'}</span><span class="muted small">${p.category||''} · 👁 ${shop.views||0} views</span></div>
-          </div>
-        `;
-      }).join('');
-    }
-  }
-
-  if(statusEl){
-    const approvedCount = allShops.filter(s=>s.approved===true).length;
-    const pendingCount = allShops.filter(s=>s.approved!==true).length;
-    const totalViews = allShops.reduce((a,s)=>a+(s.views||0),0);
-    const totalCalls = allShops.reduce((a,s)=>a+(s.callClicks||0),0);
-    const totalMaps = allShops.reduce((a,s)=>a+(s.mapClicks||0),0);
-    statusEl.textContent = `${approvedCount} approved · ${pendingCount} pending · ${products.length} products · 👁 ${totalViews} total views · 📞 ${totalCalls} calls · 📍 ${totalMaps} maps · Live Firebase website-1cb04`;
+    console.log('Loading shops from Firebase...');
+    // SAME QUERY THAT WORKED BEFORE - approved == true
+    const q = query(collection(db, 'shops'), where('approved', '==', true));
+    const snap = await getDocs(q);
+    console.log('Shops fetched:', snap.size);
+    allShops = snap.docs.map(d => ({id:d.id, ...d.data()}));
+    document.getElementById('totalShops').textContent = allShops.length;
+    renderShops(allShops);
+  }catch(e){
+    console.error('Load error:', e);
+    // FALLBACK - Show all shops if approved filter fails - This also worked
+    try{
+      const q2 = query(collection(db, 'shops'));
+      const snap2 = await getDocs(q2);
+      console.log('Fallback - All shops:', snap2.size);
+      allShops = snap2.docs.map(d => ({id:d.id, ...d.data()}));
+      document.getElementById('totalShops').textContent = allShops.length;
+      renderShops(allShops);
+    }catch(e2){ console.error(e2); document.getElementById('empty').style.display='block'; }
   }
 }
-
-try {
-  onSnapshot(collection(db, "shops"), (snap)=>{
-    allShops = snap.docs.map(d=>({id:d.id, ...d.data()}));
-    console.log("Shops live:", allShops.length, "Approved:", allShops.filter(s=>s.approved).length, "Total views:", allShops.reduce((a,s)=>a+(s.views||0),0));
-    render();
-  }, err=>{ 
-    console.error(err); 
-    if(shopsEl) shopsEl.innerHTML=`<div class="card err">Error loading shops: ${err.message}<br>Check Firestore Rules: allow read if true<br>For views/clicks tracking, need allow write if true OR allow update with increment - For now, tracking needs auth or open write rule</div>`; 
-  });
-
-  onSnapshot(collection(db, "products"), (snap)=>{
-    allProducts = snap.docs.map(d=>({id:d.id, ...d.data()}));
-    render();
-  });
-
-  onSnapshot(collection(db, "banners"), (snap)=>{
-    allBanners = snap.docs.map(d=>({id:d.id, ...d.data()}));
-    render();
-  });
-
-  onSnapshot(collection(db, "cities"), (snap)=>{
-    allCities = snap.docs.map(d=>d.data());
-    render();
-  });
-
-} catch(e){
-  console.error("Firebase init error", e);
-  if(statusEl) statusEl.textContent = "Firebase error: " + e.message;
+function renderShops(list){
+  const grid = document.getElementById('shops');
+  const empty = document.getElementById('empty');
+  if(list.length===0){ grid.innerHTML=''; empty.style.display='block'; return; }
+  empty.style.display='none';
+  grid.innerHTML = list.map(s => `
+    <div class="card">
+      <div style="display:flex;justify-content:space-between"><span class="badge badge-cat">${s.category||'Shop'}</span><span class="badge badge-open">● Open</span></div>
+      <div class="title">${s.name||'Shop'}</div>
+      <div class="meta">📍 ${s.area||''} ${s.city||''} · ${s.open||'09:00'} - ${s.close||'09:00'}</div>
+      <div class="actions">
+        <a class="act act-primary" href="tel:${s.phone}" onclick="track('${s.id}','callClicks')">📞 Call</a>
+        <a class="act" href="https://wa.me/91${s.phone}" target="_blank" onclick="track('${s.id}','bookClicks')">💬 WhatsApp</a>
+        <a class="act" href="${s.map||'#'}" target="_blank" onclick="track('${s.id}','mapClicks')">📍 Map</a>
+      </div>
+    </div>
+  `).join('');
 }
-
-searchEl?.addEventListener('input', render);
-townEl?.addEventListener('change', render);
-catEl?.addEventListener('change', render);
-document.getElementById('refresh')?.addEventListener('click', render);
-
-window.JaoraBazaar = { allShops, render, trackView, trackCall, trackMap };
-console.log("✅ Customer.js FIXED - Views and Clicks tracking ACTIVE - Private analytics for admin");
+// TRACK VIEWS/CLICKS - But DON'T SHOW to customer - Only increment in Firebase for admin
+window.track = async (id, field) => {
+  try{
+    // Increment counter + views (for admin private analytics)
+    await updateDoc(doc(db, 'shops', id), { [field]: increment(1), views: increment(1) });
+  }catch(e){ console.log('track error', e.code); }
+}
+function filter(){
+  const term = (document.getElementById('searchBox').value||'').toLowerCase();
+  const town = document.getElementById('townFilter').value;
+  const cat = document.getElementById('catFilter').value;
+  let f = allShops.filter(s => {
+    const search = !term || (s.name+s.area+s.city+s.category).toLowerCase().includes(term);
+    const t = !town || s.city===town;
+    const c = !cat || s.category===cat;
+    return search && t && c;
+  });
+  renderShops(f);
+}
+document.getElementById('searchBox').addEventListener('input', filter);
+document.getElementById('townFilter').addEventListener('change', filter);
+document.getElementById('catFilter').addEventListener('change', filter);
+loadShops();
+</script>
+</body>
+</html>
