@@ -3,337 +3,127 @@
 <head>
 <meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>Jaora Bazaar - Apna Local Bazaar | Discover Shops Near You</title>
-<meta name="description" content="Jaora, Raghogarh, Rajgarh ka apna bazaar - Local shops, grocery, clothing, electronics, food - Support local businesses"/>
-<link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap" rel="stylesheet">
 <style>
-:root{
-  --bg:#FFFBF5; --card:#FFFFFF; --ink:#1A1A1A; --muted:#6B7280; --line:#F3E8D3;
-  --orange:#FF6B2C; --orange-dark:#E55A1F; --orange-light:#FFF0E6;
-  --green:#0E9F6E; --yellow:#FBBF24; --blue:#3B82F6;
-  --radius:20px; --radius-sm:12px; --shadow:0 8px 32px rgba(0,0,0,0.06); --shadow-hover:0 16px 48px rgba(0,0,0,0.12);
-}
-*{box-sizing:border-box}*{margin:0;padding:0}
-body{font-family:'Plus Jakarta Sans',system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.5;-webkit-font-smoothing:antialiased}
-a{color:inherit;text-decoration:none}
-.wrap{max-width:1200px;margin:0 auto;padding:0 20px}
-.top{position:sticky;top:0;z-index:50;background:rgba(255,251,245,0.9);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
+:root{--bg:#FFFBF5;--card:#FFFFFF;--ink:#1A1A1A;--muted:#6B7280;--line:#F3E8D3;--orange:#FF6B2C;--orange-light:#FFF0E6;--radius:20px;--shadow:0 8px 32px rgba(0,0,0,0.06)}
+*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--ink);line-height:1.5}
+.wrap{max-width:1200px;margin:0 auto;padding:0 20px}.top{position:sticky;top:0;z-index:50;background:rgba(255,251,245,0.9);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
 .top-inner{display:flex;justify-content:space-between;align-items:center;height:72px}
-.brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:22px;letter-spacing:-0.02em}
-.brand span{font-family:'Fraunces',serif;font-weight:700}
-.brand-icon{width:40px;height:40px;background:var(--orange);border-radius:12px;display:grid;place-items:center;color:#fff;font-size:20px}
-.nav{display:flex;gap:8px;align-items:center}
-.btn{padding:10px 18px;border-radius:999px;font-weight:600;font-size:14px;transition:all 0.2s;border:1px solid transparent;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
-.btn-primary{background:var(--ink);color:#fff}.btn-primary:hover{background:#000;transform:translateY(-1px)}
-.btn-secondary{background:var(--card);border-color:var(--line);color:var(--ink)}.btn-secondary:hover{border-color:var(--ink)}
-.btn-ghost{background:transparent;color:var(--muted)}.btn-ghost:hover{color:var(--ink)}
+.brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:22px}.brand-icon{width:40px;height:40px;background:var(--orange);border-radius:12px;display:grid;place-items:center;color:#fff}
+.btn{padding:10px 18px;border-radius:999px;font-weight:600;font-size:14px;cursor:pointer;display:inline-flex;gap:6px;border:1px solid transparent;text-decoration:none}
+.btn-primary{background:var(--ink);color:#fff}.btn-secondary{background:var(--card);border:1px solid var(--line)}
 .hero{padding:48px 0 32px;display:grid;grid-template-columns:1.1fr 0.9fr;gap:40px;align-items:center}
-.hero h1{font-family:'Fraunces',serif;font-size:clamp(36px,5vw,64px);line-height:0.95;letter-spacing:-0.03em;font-weight:700}
-.hero h1 em{font-style:normal;color:var(--orange);position:relative}
-.hero h1 em::after{content:'';position:absolute;bottom:4px;left:0;right:0;height:12px;background:var(--orange-light);z-index:-1;transform:rotate(-1deg)}
+.hero h1{font-family:'Fraunces',serif;font-size:clamp(36px,5vw,64px);line-height:0.95;letter-spacing:-0.03em}.hero h1 em{font-style:normal;color:var(--orange)}
 .hero p{font-size:18px;color:var(--muted);margin:20px 0 28px;max-width:48ch}
-.hero-stats{display:flex;gap:24px;margin-top:28px}
-.stat{display:flex;flex-direction:column}
-.stat b{font-size:28px;font-weight:700;letter-spacing:-0.02em;line-height:1}
-.stat span{font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;font-weight:600}
-.hero-visual{position:relative}
-.hero-card{background:var(--card);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);border:1px solid var(--line);transform:rotate(2deg)}
-.hero-card:nth-child(2){position:absolute;top:-20px;right:20px;transform:rotate(-3deg);z-index:-1;background:var(--orange);color:#fff;border-color:var(--orange-dark)}
-.hero-card h4{font-size:14px;text-transform:uppercase;letter-spacing:0.05em;opacity:0.7;margin-bottom:8px}
-.hero-card .shop-row{display:flex;gap:12px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)}
-.hero-card .shop-row:last-child{border:none}
-.hero-card:nth-child(2) .shop-row{border-color:rgba(255,255,255,0.2)}
-.dot{width:36px;height:36px;border-radius:10px;background:var(--orange-light);display:grid;place-items:center;font-size:16px}
-.hero-card:nth-child(2) .dot{background:rgba(255,255,255,0.2)}
 .filters{position:sticky;top:72px;z-index:40;background:rgba(255,251,245,0.95);backdrop-filter:blur(16px);padding:16px 0;border-bottom:1px solid var(--line);margin-bottom:24px}
-.filters-inner{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
-.search{flex:1;min-width:280px;position:relative}
-.search input{width:100%;padding:14px 18px 14px 44px;border-radius:999px;border:1px solid var(--line);background:var(--card);font-size:15px;outline:none;transition:all 0.2s}
-.search input:focus{border-color:var(--orange);box-shadow:0 0 0 4px var(--orange-light)}
-.search-icon{position:absolute;left:16px;top:50%;transform:translateY(-50%);color:var(--muted)}
-.select{padding:12px 36px 12px 16px;border-radius:999px;border:1px solid var(--line);background:var(--card);font-size:14px;font-weight:600;outline:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236B7280' d='M6 8L1 3h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;cursor:pointer;transition:all 0.2s}
-.select:focus{border-color:var(--orange)}
-.chips{display:flex;gap:8px;overflow:auto;padding-bottom:4px;scrollbar-width:none}
-.chip{padding:8px 14px;border-radius:999px;background:var(--card);border:1px solid var(--line);font-size:13px;font-weight:600;white-space:nowrap;cursor:pointer;transition:all 0.2s}
-.chip:hover{border-color:var(--ink)}
-.chip.active{background:var(--ink);color:#fff;border-color:var(--ink)}
-.section{margin:32px 0}
-.section-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:16px}
-.section-head h2{font-family:'Fraunces',serif;font-size:28px;letter-spacing:-0.02em}
-.section-head a{font-size:13px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em}.section-head a:hover{color:var(--ink)}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px}
-.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:18px;transition:all 0.25s;position:relative;overflow:hidden}
-.card:hover{transform:translateY(-4px);box-shadow:var(--shadow-hover);border-color:var(--ink)}
-.card .top-row{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px}
-.badge{padding:4px 10px;border-radius:999px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em}
-.badge-open{background:#DCFCE7;color:#166534}.badge-closed{background:#F3F4F6;color:#6B7280}
-.badge-cat{background:var(--orange-light);color:var(--orange-dark)}
-.title{font-weight:700;font-size:18px;line-height:1.2;letter-spacing:-0.01em;margin-bottom:4px}
-.muted{color:var(--muted)}.small{font-size:13px}
-.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-.stack{display:flex;gap:8px}
-.btn-icon{width:40px;height:40px;border-radius:999px;display:grid;place-items:center;background:var(--ink);color:#fff;transition:all 0.2s}
-.btn-icon:hover{transform:scale(1.05)}
-.btn-icon.secondary{background:var(--card);border:1px solid var(--line);color:var(--ink)}
-.price{font-weight:700;font-size:20px;letter-spacing:-0.02em}
-.price span{font-weight:400;font-size:13px;color:var(--muted)}
-.banner{background:linear-gradient(135deg,var(--orange),#FF8A4D);border-radius:var(--radius);padding:20px;color:#fff;position:relative;overflow:hidden;transition:all 0.25s}
-.banner:hover{transform:translateY(-2px);box-shadow:var(--shadow-hover)}
-.banner::before{content:'';position:absolute;top:-40%;right:-20%;width:80%;height:80%;background:rgba(255,255,255,0.15);border-radius:50%;transform:rotate(15deg)}
-.banner-inner{position:relative}
-.banner .pill{background:rgba(255,255,255,0.2);color:#fff;border:1px solid rgba(255,255,255,0.3)}
-.pill{display:inline-flex;padding:4px 10px;border-radius:999px;font-size:11px;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;background:var(--card);border:1px solid var(--line)}
-.empty{padding:48px 24px;text-align:center;border:2px dashed var(--line);border-radius:var(--radius);background:rgba(255,255,255,0.5)}
-.empty b{display:block;font-family:'Fraunces',serif;font-size:20px;margin-bottom:8px}
-.footer{margin-top:64px;padding:40px 0;border-top:1px solid var(--line);color:var(--muted);font-size:13px}
-.footer-inner{display:flex;justify-content:space-between;flex-wrap:wrap;gap:20px}
-.footer b{color:var(--ink)}
-@media(max-width:900px){
-  .hero{grid-template-columns:1fr;gap:24px}
-  .hero-visual{display:none}
-  .filters-inner{flex-direction:column;align-items:stretch}
-  .search{min-width:auto}
-}
+.filters-inner{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+.search{flex:1;min-width:280px;position:relative}.search input{width:100%;padding:14px 18px 14px 44px;border-radius:999px;border:1px solid var(--line);background:var(--card);font-size:15px;outline:none}
+.chip{padding:8px 16px;border-radius:999px;background:var(--card);border:1px solid var(--line);font-size:14px;font-weight:600;cursor:pointer;transition:all 0.2s}
+.chip.active,.chip:hover{background:var(--ink);color:#fff;border-color:var(--ink)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:20px}
+.card{background:var(--card);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);border:1px solid var(--line);transition:all 0.2s}
+.card:hover{transform:translateY(-4px);box-shadow:0 16px 48px rgba(0,0,0,0.12)}
+.badge{display:inline-flex;padding:4px 10px;border-radius:999px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em}
+.badge-cat{background:var(--orange-light);color:var(--orange)}.badge-open{background:#ECFDF5;color:#0E9F6E}
+.card-title{font-weight:700;font-size:18px;margin:10px 0 4px;letter-spacing:-0.01em}.card-meta{font-size:13px;color:var(--muted)}
+.card-actions{display:flex;gap:8px;margin-top:14px}
+.action{flex:1;padding:10px;border-radius:12px;font-weight:600;font-size:13px;text-align:center;cursor:pointer;border:1px solid var(--line);background:var(--card)}
+.action-primary{background:var(--ink);color:#fff;border-color:var(--ink)}
+.hidden{color:transparent;background:#f5f5f5}
+@media(max-width:800px){.hero{grid-template-columns:1fr}.hero-visual{display:none}}
 </style>
 </head>
 <body>
-<header class="top">
-<div class="wrap top-inner">
-<a class="brand" href="index.html"><span class="brand-icon">🛍</span><span>Jaora Bazaar</span></a>
-<div class="nav">
-<a class="btn btn-ghost" href="shop/">Shop Login</a>
-<a class="btn btn-secondary" href="jagruk-473287-control/">Admin</a>
-<a class="btn btn-primary" href="#shops">Explore →</a>
+<div class="top"><div class="wrap"><div class="top-inner">
+<div class="brand"><div class="brand-icon">🛍</div><span>Jaora Bazaar</span></div>
+<div style="display:flex;gap:8px"><a class="btn btn-secondary" href="./shop/">Shop Login</a><a class="btn btn-primary" href="#shops">Explore →</a></div>
+</div></div></div>
+<div class="wrap">
+<div class="hero">
+<div><h1>Apna local bazaar — <em>Jaora, Raghogarh ka apna.</em></h1>
+<p>Local dukaan, grocery, kapde, electronics, khana — sab kuch ek jagah. Support karo apne local businesses ko.</p>
+<div style="display:flex;gap:24px"><div><b id="totalShops" style="font-size:28px">—</b><br><span style="font-size:12px;color:#6B7280;text-transform:uppercase">Shops Live</span></div><div><b style="font-size:28px">Jaora</b><br><span style="font-size:12px;color:#6B7280">CITY ACTIVE</span></div></div>
+</div>
+<div style="background:var(--card);border-radius:20px;padding:20px;box-shadow:var(--shadow);border:1px solid var(--line);transform:rotate(1deg)">
+<h4 style="font-size:12px;opacity:0.6;margin-bottom:12px">POPULAR IN JAORA</h4>
+<div style="display:flex;gap:12px;padding:8px 0;border-bottom:1px solid var(--line)"><div style="width:36px;height:36px;background:var(--orange-light);border-radius:10px;display:grid;place-items:center">⚡</div><div><div style="font-weight:600;font-size:14px">Sharma Electricals</div><div style="font-size:12px;color:#6B7280">Bima Road · Electronics</div></div></div>
+<div style="display:flex;gap:12px;padding:8px 0;border-bottom:1px solid var(--line)"><div style="width:36px;height:36px;background:#ECFDF5;border-radius:10px;display:grid;place-items:center">👕</div><div><div style="font-weight:600;font-size:14px">Raghogarh Fashion</div><div style="font-size:12px;color:#6B7280">Main Market · Clothing</div></div></div>
+<div style="display:flex;gap:12px;padding:8px 0"><div style="width:36px;height:36px;background:#FEF3C7;border-radius:10px;display:grid;place-items:center">🥦</div><div><div style="font-weight:600;font-size:14px">Fresh Mart</div><div style="font-size:12px;color:#6B7280">Rajgarh · Grocery</div></div></div>
 </div>
 </div>
-</header>
-<main class="wrap">
-<section class="hero">
-<div>
-<div class="pill" style="margin-bottom:16px;background:var(--orange-light);color:var(--orange-dark);border-color:#FFD6BF">● Live from Firebase • 50k reads/day</div>
-<h1>Apna local <em>bazaar</em> — Jaora, Raghogarh ka apna.</h1>
-<p>Discover grocery, clothing, electronics, food & more from shops you trust. Direct contact, no commission. Support local, shop local. 500/week per category, banner 2000/month.</p>
-<div class="row" style="gap:12px">
-<a class="btn btn-primary" href="#shops" style="padding:14px 24px;font-size:15px">Browse Shops — <span id="shopCount">0 shops</span></a>
-<a class="btn btn-secondary" href="shop/" style="padding:14px 20px">Are you a shop owner?</a>
+<div class="filters"><div class="filters-inner">
+<div class="search"><span style="position:absolute;left:16px;top:50%;transform:translateY(-50%)">🔍</span><input id="searchBox" placeholder="Search shops, Bima Road, Jaora..."/></div>
+<select id="townFilter" class="chip" style="padding:12px 16px"><option value="">All Towns</option><option value="Jaora">Jaora</option><option value="Raghogarh">Raghogarh</option><option value="Rajgarh">Rajgarh</option></select>
+<select id="categoryFilter" class="chip" style="padding:12px 16px"><option value="">All Categories</option><option value="Grocery">Grocery</option><option value="Clothing">Clothing</option><option value="Electronics">Electronics</option><option value="Food">Food</option><option value="Beauty">Beauty</option></select>
 </div>
-<div class="hero-stats">
-<div class="stat"><b id="statShops">0</b><span>Shops Live</span></div>
-<div class="stat"><b id="statViews">0</b><span>Total Views</span></div>
-<div class="stat"><b id="statCities">Jaora</b><span>City Active</span></div>
-</div>
-</div>
-<div class="hero-visual">
-<div class="hero-card">
-<h4>🔥 Popular in Jaora</h4>
-<div class="shop-row"><div class="dot">⚡</div><div><b>Sharma Electricals</b><div class="muted small">Bima Road • Electronics</div></div><span class="badge badge-open">Open</span></div>
-<div class="shop-row"><div class="dot">👕</div><div><b>Raghogarh Fashion</b><div class="muted small">Main Market • Clothing</div></div><span class="badge badge-open">Open</span></div>
-<div class="shop-row"><div class="dot">🥦</div><div><b>Fresh Mart</b><div class="muted small">Station Road • Grocery</div></div><span class="badge badge-open">Open</span></div>
-</div>
-<div class="hero-card">
-<h4>✨ New Offers</h4>
-<div style="font-weight:700;font-size:20px;line-height:1.1">Diwali Dhamaka — Up to 40% off on electronics in Jaora!</div>
-<div style="margin-top:10px;opacity:0.9;font-size:13px">Rs 2000/month banner • Every 8 products • Private analytics</div>
-</div>
-</div>
-</section>
-<div id="bannerArea"></div>
-<div class="filters">
-<div class="wrap filters-inner">
-<div class="search">
-<span class="search-icon">🔍</span>
-<input id="search" placeholder="Search shops, products, Bima Road, Jaora..."/>
-</div>
-<select id="town" class="select"><option value="">All Towns</option></select>
-<select id="category" class="select">
-<option value="">All Categories</option>
-<option>Grocery</option><option>Clothing</option><option>Electronics</option><option>Food</option><option>Beauty</option><option>Other</option>
-</select>
-<div class="chips" id="chips">
-<span class="chip active" data-cat="">All</span>
-<span class="chip" data-cat="Grocery">🥦 Grocery</span>
-<span class="chip" data-cat="Clothing">👕 Clothing</span>
-<span class="chip" data-cat="Electronics">⚡ Electronics</span>
-<span class="chip" data-cat="Food">🍛 Food</span>
-<span class="chip" data-cat="Beauty">💄 Beauty</span>
-</div>
-</div>
-</div>
-<section class="section" id="shops">
-<div class="section-head">
-<h2>Local shops — Approved & Live</h2>
-<a id="status" class="muted">Loading from Firebase website-1cb04...</a>
-</div>
-<div id="shops" class="grid">Loading shops from Firebase website-1cb04...</div>
-</section>
-<section class="section" id="products">
-<div class="section-head">
-<h2>Products from local shops</h2>
-<a href="shop/">Shop owner? Add products →</a>
-</div>
-<div id="products" class="grid">Loading products...</div>
-</section>
-</main>
-<footer class="footer">
-<div class="wrap footer-inner">
-<div>
-<b>Jaora Bazaar</b> — Apna Local Bazaar<br>
-Jaora, Raghogarh, Rajgarh, Bima Road ka apna marketplace.<br>
-<span class="muted">Firebase LIVE project website-1cb04 • 50k reads/day ~5k customers/day • Private analytics only for admin</span>
-</div>
-<div>
-<b>For Shop Owners</b><br>
-<a href="shop/">Login / Add Products</a><br>
-<a href="jagruk-473287-control/">Secret Admin (only you)</a><br>
-<span class="muted">Rs 500/week per category • Popular Rs 1500/month • Banner Rs 2000/month • Target 70k/month</span>
-</div>
-<div>
-<b>Support Local</b><br>
-Shop location/number public OK (shops want banner). Customer anonymous, city/area only.<br>
-<span class="muted">Mobile UNIQUE across all shops • Owner Email UNIQUE • Timing Mon-Sun 09:00 AM - 09:00 PM</span>
-</div>
-</div>
+<div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
+<button class="chip active" data-cat="">All</button><button class="chip" data-cat="Grocery">🥦 Grocery</button><button class="chip" data-cat="Clothing">👕 Clothing</button><button class="chip" data-cat="Electronics">⚡ Electronics</button><button class="chip" data-cat="Food">🍛 Food</button><button class="chip" data-cat="Beauty">💄 Beauty</button>
+</div></div>
+<div id="shops" class="grid"></div>
+<div id="empty" style="display:none;text-align:center;padding:60px 20px;color:#6B7280"><div style="font-size:48px">🔍</div><h3>No shops found</h3><p>Try changing town or category</p></div>
+<footer style="margin:60px 0 20px;padding-top:20px;border-top:1px solid var(--line);display:flex;justify-content:space-between;flex-wrap:wrap;gap:20px;color:#6B7280;font-size:13px">
+<div><b style="color:var(--ink)">Jaora Bazaar</b> — Jaora, Raghogarh, Rajgarh ka apna bazaar</div>
+<div>For Shop Owners: <a href="./shop/">Shop Login</a> · <a href="./jagruk-473287-control/">Admin</a></div>
 </footer>
+</div>
 <script type="module">
-import { db } from "./js/firebase-config.js";
-import { collection, onSnapshot, doc, updateDoc, increment, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-let allShops=[], allProducts=[], allBanners=[], allCities=[];
-let viewedShops = new Set();
-const shopsEl = document.getElementById('shops');
-const productsEl = document.getElementById('products');
-const bannerArea = document.getElementById('bannerArea');
-const searchEl = document.getElementById('search');
-const townEl = document.getElementById('town');
-const catEl = document.getElementById('category');
-const statusEl = document.getElementById('status');
-const chipsEl = document.getElementById('chips');
-window.trackView = async (shopId)=>{
-  if(viewedShops.has(shopId)) return;
-  viewedShops.add(shopId);
-  try{
-    await updateDoc(doc(db, "shops", shopId), { views: increment(1), lastViewed: serverTimestamp() });
-    await addDoc(collection(db, "clicks"), { shopId, type:"view", at: serverTimestamp() });
-  }catch(e){ console.log("View:", e.message); }
-};
-window.trackCall = async (shopId, phone)=>{
-  try{
-    await updateDoc(doc(db, "shops", shopId), { callClicks: increment(1) });
-    await addDoc(collection(db, "clicks"), { shopId, type:"call", phone, at: serverTimestamp() });
-  }catch(e){}
-};
-window.trackMap = async (shopId)=>{
-  try{
-    await updateDoc(doc(db, "shops", shopId), { mapClicks: increment(1) });
-    await addDoc(collection(db, "clicks"), { shopId, type:"map", at: serverTimestamp() });
-  }catch(e){}
-};
-window.trackBanner = async (id)=>{
-  try{ await updateDoc(doc(db, "banners", id), { clicks: increment(1) }); }catch(e){}
-};
-function render(){
-  const q = (searchEl?.value||'').toLowerCase();
-  const town = townEl?.value||'';
-  const cat = catEl?.value||'';
-  let shops = allShops.filter(s=>{
-    if(s.approved!==true) return false;
-    const matchQ = !q || (s.name||'').toLowerCase().includes(q) || (s.area||'').toLowerCase().includes(q) || (s.city||'').toLowerCase().includes(q);
-    const matchTown = !town || s.city===town;
-    const matchCat = !cat || (s.category||'').toLowerCase()===cat.toLowerCase();
-    return matchQ && matchTown && matchCat;
-  });
-  let products = allProducts.filter(p=>{
-    const shop = allShops.find(s=>s.id===p.shopId || s.phone===p.shopPhone);
-    if(!shop || shop.approved!==true) return false;
-    const matchQ = !q || (p.name||'').toLowerCase().includes(q);
-    const matchCat = !cat || (p.category||'').toLowerCase()===cat.toLowerCase();
-    const matchTown = !town || shop.city===town;
-    return matchQ && matchCat && matchTown;
-  });
-  if(allCities.length && townEl){
-    const towns = new Set([...allCities.map(c=>c.name), ...allShops.filter(s=>s.approved).map(s=>s.city).filter(Boolean)]);
-    const cur = townEl.value;
-    townEl.innerHTML = '<option value="">All Towns</option>' + [...towns].map(t=>`<option value="${t}">${t}</option>`).join('');
-    townEl.value = cur;
-    document.getElementById('statCities').textContent = [...towns][0]||'Jaora';
-  }
-  if(shopsEl){
-    if(!shops.length){
-      const pending = allShops.filter(s=>s.approved!==true).length;
-      shopsEl.innerHTML = pending>0 ? `<div class="empty"><b>⏳ ${pending} shops pending approval</b><span class="muted">Go to secret admin to approve - Shops approved will show here instantly (live)</span></div>` : `<div class="empty"><b>No shops yet</b><span class="muted">Admin needs to add shops in jagruk-473287-control/ - Add Shop with owner email</span></div>`;
-    } else {
-      shopsEl.innerHTML = shops.map(s=>{
-        setTimeout(()=>trackView(s.id), 600);
-        const timing = s.open && s.close ? `${s.open} - ${s.close}` : '09:00 AM - 09:00 PM';
-        return `
-          <div class="card">
-            <div class="top-row">
-              <span class="badge badge-cat">${s.category||'General'}</span>
-              <span class="badge badge-open">● Open ${timing}</span>
-            </div>
-            <div class="title">${s.name||'Shop'}</div>
-            <div class="muted small">${s.city||''} ${s.area? '· '+s.area:''} · Mobile UNIQUE ${s.phone? s.phone.slice(0,3)+'•••'+s.phone.slice(-2):''}</div>
-            <div class="row" style="margin-top:14px">
-              ${s.phone? `<a class="btn btn-primary" href="tel:${s.phone}" onclick="trackCall('${s.id}','${s.phone}')">📞 Call</a>`:''}
-              ${s.phone? `<a class="btn btn-secondary" href="https://wa.me/91${s.phone.replace(/\D/g,'')}" target="_blank" onclick="trackCall('${s.id}','${s.phone}')">💬 WhatsApp</a>`:''}
-              ${s.map? `<a class="btn-icon secondary" href="${s.map}" target="_blank" onclick="trackMap('${s.id}')" title="Map">📍</a>`:''}
-            </div>
-            <div class="row small muted" style="margin-top:12px;border-top:1px solid var(--line);padding-top:10px">
-              <span>👁 ${s.views||0} · 📞 ${s.callClicks||0} · 📍 ${s.mapClicks||0}</span>
-              <span style="margin-left:auto">${s.insta? `<a href="${s.insta}" target="_blank">📸</a>`:''} ${s.fb? `<a href="${s.fb}" target="_blank">📘</a>`:''}</span>
-            </div>
-          </div>
-        `;
-      }).join('');
-    }
-  }
-  if(bannerArea && allBanners.length){
-    bannerArea.innerHTML = `<div class="wrap" style="padding:0 20px"><div class="grid" style="grid-template-columns:1fr">${allBanners.map(b=>`<a href="${b.url||'#'}" target="_blank" class="banner" onclick="trackBanner('${b.id}')"><div class="banner-inner"><span class="pill" style="background:rgba(255,255,255,0.2);color:#fff;border-color:rgba(255,255,255,0.3)">AD · Rs ${b.price||2000} · ${b.clicks||0} clicks</span><div style="font-family:'Fraunces',serif;font-size:22px;font-weight:700;margin-top:8px">${b.title||'Sponsored'}</div><div style="opacity:0.9;font-size:13px;margin-top:4px">${b.city||''} · Every 8 products · Private analytics</div></div></a>`).join('')}</div></div>`;
-  }
-  if(productsEl){
-    if(!products.length){
-      productsEl.innerHTML = `<div class="empty"><b>No products yet</b><span class="muted">Products from approved shops will show here - Shop owners add via /shop/</span></div>`;
-    } else {
-      productsEl.innerHTML = products.map((p,i)=>{
-        const shop = allShops.find(s=>s.id===p.shopId || s.phone===p.shopPhone) || {};
-        let bannerHtml = '';
-        if(i>0 && i%8===0 && allBanners[0]){
-          const b = allBanners[0];
-          bannerHtml = `<div class="banner" style="grid-column:1/-1"><div class="banner-inner"><span class="pill" style="background:rgba(255,255,255,0.2)">BANNER AD - ${b.title}</span> <span style="opacity:0.9">${b.city||''} - Rs ${b.price||2000}</span></div></div>`;
-        }
-        return `${bannerHtml}<div class="card"><div class="badge badge-cat" style="margin-bottom:8px">${p.category||'Product'}</div><div class="title" style="font-size:16px">${p.name||'Product'}</div><div class="muted small">${shop.name||''} ${shop.city? '· '+shop.city:''}</div><div class="row" style="margin-top:10px"><span class="price">Rs ${p.price||'--'}</span><span class="muted small">· 👁 ${shop.views||0}</span></div></div>`;
-      }).join('');
-    }
-  }
-  if(statusEl){
-    const approved = allShops.filter(s=>s.approved===true).length;
-    const pending = allShops.filter(s=>s.approved!==true).length;
-    const totalViews = allShops.reduce((a,s)=>a+(s.views||0),0);
-    statusEl.textContent = `${approved} approved · ${pending} pending · ${products.length} products · 👁 ${totalViews} views · Live website-1cb04`;
-    document.getElementById('shopCount').textContent = `${approved} shops`;
-    document.getElementById('statShops').textContent = approved;
-    document.getElementById('statViews').textContent = totalViews;
-  }
+import { firebaseConfig } from './js/firebase-config.js';
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getFirestore, collection, query, where, getDocs, doc, updateDoc, increment } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+const app=initializeApp(firebaseConfig); const db=getFirestore(app);
+let allShops=[];
+async function load(){
+ const q=query(collection(db,'shops'),where('approved','==',true));
+ const snap=await getDocs(q);
+ allShops=snap.docs.map(d=>({id:d.id,...d.data()}));
+ document.getElementById('totalShops').textContent=allShops.length;
+ render(allShops);
 }
-try{
-  onSnapshot(collection(db, "shops"), snap=>{
-    allShops = snap.docs.map(d=>({id:d.id, ...d.data()}));
-    render();
-  });
-  onSnapshot(collection(db, "products"), snap=>{ allProducts = snap.docs.map(d=>({id:d.id, ...d.data()})); render(); });
-  onSnapshot(collection(db, "banners"), snap=>{ allBanners = snap.docs.map(d=>({id:d.id, ...d.data()})); render(); });
-  onSnapshot(collection(db, "cities"), snap=>{ allCities = snap.docs.map(d=>d.data()); render(); });
-}catch(e){ console.error(e); }
-searchEl?.addEventListener('input', render);
-townEl?.addEventListener('change', render);
-catEl?.addEventListener('change', render);
-chipsEl?.addEventListener('click', e=>{
-  if(e.target.classList.contains('chip')){
-    chipsEl.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));
-    e.target.classList.add('active');
-    catEl.value = e.target.dataset.cat||'';
-    render();
-  }
+function render(list){
+ const grid=document.getElementById('shops'); const empty=document.getElementById('empty');
+ if(list.length===0){grid.innerHTML='';empty.style.display='block';return} empty.style.display='none';
+ grid.innerHTML=list.map(s=>`
+ <div class="card">
+  <div style="display:flex;justify-content:space-between;align-items:center"><span class="badge badge-cat">${s.category||'Shop'}</span><span class="badge badge-open">● Open</span></div>
+  <div class="card-title">${s.name||'Shop Name'}</div>
+  <div class="card-meta">📍 ${s.area||''} ${s.city||''} · ${s.timingDays? s.timingDays.slice(0,3).join(', ')+'...' : (s.open||'09:00')+' - '+(s.close||'09:00')}</div>
+  <div class="card-actions">
+   <a class="action action-primary" href="tel:${s.phone}" onclick="track('${s.id}','callClicks')">📞 Call</a>
+   <a class="action" href="https://wa.me/91${s.phone}" target="_blank" onclick="track('${s.id}','bookClicks')">💬 WhatsApp</a>
+   <a class="action" href="${s.map||'#'}" target="_blank" onclick="track('${s.id}','mapClicks')">📍 Map</a>
+  </div>
+ </div>`).join('');
+}
+window.track=async(id,field)=>{
+ try{await updateDoc(doc(db,'shops',id),{[field]:increment(1),views:field==='views'?increment(0):increment(1)});}catch(e){console.log('track',e)}
+ if(field==='callClicks'||field==='mapClicks'||field==='bookClicks'){
+  try{await updateDoc(doc(db,'shops',id),{views:increment(1)});}catch{}
+ }
+}
+function applyFilters(){
+ const term=(document.getElementById('searchBox').value||'').toLowerCase();
+ const town=document.getElementById('townFilter').value;
+ const cat=document.getElementById('categoryFilter').value;
+ let filtered=allShops.filter(s=>{
+  const matchSearch=!term || (s.name+s.area+s.city+s.category).toLowerCase().includes(term);
+  const matchTown=!town || s.city===town;
+  const matchCat=!cat || s.category===cat;
+  return matchSearch && matchTown && matchCat;
+ });
+ render(filtered);
+}
+document.getElementById('searchBox').addEventListener('input',applyFilters);
+document.getElementById('townFilter').addEventListener('change',applyFilters);
+document.getElementById('categoryFilter').addEventListener('change',applyFilters);
+document.querySelectorAll('.chip[data-cat]').forEach(ch=>{
+ ch.addEventListener('click',()=>{
+  document.querySelectorAll('.chip[data-cat]').forEach(c=>c.classList.remove('active'));
+  ch.classList.add('active');
+  document.getElementById('categoryFilter').value=ch.dataset.cat;
+  applyFilters();
+ });
 });
+load();
 </script>
 </body>
 </html>
