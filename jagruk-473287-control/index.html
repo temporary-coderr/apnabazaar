@@ -1,3 +1,144 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Secret Admin - FIXED Owner Email - Jaora Bazaar</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:system-ui;background:#0a0a0a;color:#fff;padding:16px}
+.wrap{max-width:1100px;margin:0 auto}.top{display:flex;gap:12px;margin-bottom:16px;font-size:13px}a{color:#888;text-decoration:none}a:hover{color:#fff}
+.card{background:#111;border:1px solid #222;border-radius:12px;padding:12px;margin:8px 0}.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
+input,select{padding:10px;border-radius:8px;border:1px solid #333;background:#000;color:#fff;margin:4px 0;width:100%}
+button{padding:8px 12px;border-radius:8px;border:none;background:#fff;color:#000;font-weight:700;cursor:pointer;margin:4px}button.danger{background:#450a0a;color:#ef4444;border:1px solid #7f1d1d}
+.muted{color:#888;font-size:12px}.ok{color:#22c55e}.err{color:#ef4444}.row{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.pill{background:#222;color:#fff;padding:2px 8px;border-radius:999px;font-size:11px}
+</style>
+</head><body>
+<div class="wrap">
+<div class="top">
+<a href="../index.html">← Customer</a>
+<a href="../shop/">Shop App</a>
+<span class="pill">SECRET: jagruk-473287-control - FIXED Owner Email</span>
+</div>
+<h1>Secret Admin - Add Shop with Owner Email</h1>
+<p class="muted">Fixed: Now has Owner Email field - Shop owner can login with email + password</p>
+<div id="authArea" class="card">
+<h3>Admin Sign In</h3>
+<div class="row" style="max-width:500px">
+<input id="email" type="email" value="connectingtorahul@gmail.com" style="max-width:250px"/>
+<input id="pass" type="password" placeholder="Your 15-char SUCCESS password" style="max-width:180px"/>
+</div>
+<div class="row" style="max-width:500px">
+<button id="loginBtn">Sign in</button>
+<button id="resetBtn" style="background:#222;color:#fff;border:1px solid #333">Reset Email</button>
+</div>
+<div id="msg" style="margin-top:8px">Login with connectingtorahul@gmail.com - UID R4sVOuuiegajpUNFN9Gc89S8WY43 - No IP lock</div>
+</div>
+<div id="dashboard" style="display:none">
+<div class="card">
+<h3>📊 Overall Analytics (Private)</h3>
+<div id="analytics">Loading...</div>
+</div>
+<div class="grid">
+<div class="card">
+<h3>Location Master</h3>
+<div id="citiesList">Loading...</div>
+<input id="newCity" placeholder="Jaora / Raghogarh / Bima Road"/>
+<button onclick="addCity()">Add City/Area</button>
+</div>
+<div class="card" style="border:2px solid #22c55e">
+<h3>✅ Add Shop - FIXED with Owner Email</h3>
+<div class="muted">Mobile UNIQUE across all shops - Owner Email for shop login</div>
+<label class="muted">Shop Name *</label>
+<input id="shopName" placeholder="Sharma Electricals"/>
+<label class="muted">Mobile 10 digits UNIQUE *</label>
+<input id="shopPhone" placeholder="9876543210"/>
+<label class="muted" style="color:#22c55e;font-weight:bold">Owner Email * (for shop login)</label>
+<input id="shopOwnerEmail" placeholder="owner@gmail.com - Shop owner will login with this email" style="border-color:#22c55e"/>
+<label class="muted">Owner Password (set for owner)</label>
+<input id="shopOwnerPass" type="password" placeholder="Set password for owner - Eg: Shop@123"/>
+<label class="muted">City *</label>
+<select id="shopCity"><option value="">Select City</option></select>
+<label class="muted">Area</label>
+<input id="shopArea" placeholder="Bima Road"/>
+<label class="muted">Category</label>
+<select id="shopCategory"><option value="">Category</option><option>Grocery</option><option>Clothing</option><option>Electronics</option><option>Food</option><option>Beauty</option><option>Other</option></select>
+<div class="row">
+<div style="flex:1"><label class="muted">Open</label><input id="shopOpen" value="09:00 AM"/></div>
+<div style="flex:1"><label class="muted">Close</label><input id="shopClose" value="09:00 PM"/></div>
+</div>
+<input id="shopInsta" placeholder="Instagram URL (optional)"/>
+<input id="shopFb" placeholder="Facebook URL (optional)"/>
+<input id="shopMap" placeholder="Google Map URL (optional)"/>
+<button onclick="addShop()" style="background:#22c55e;color:#000;width:100%;padding:12px">✅ Add Shop + Create Owner Login</button>
+<div class="muted" style="margin-top:8px">This will:<br>1. Create Firebase Auth user for owner (email+password)<br>2. Create shop with ownerEmail field<br>3. Mobile UNIQUE check<br>4. Owner can login at /shop/ with his email</div>
+</div>
+<div class="card">
+<h3>Add Banner - Rs 2000/month</h3>
+<input id="bannerTitle" placeholder="Banner Title"/>
+<input id="bannerUrl" placeholder="https://wa.me/91..."/>
+<select id="bannerCity"><option>City</option></select>
+<input id="bannerPrice" value="2000"/> /month
+<button onclick="addBanner()">Add Banner</button>
+<div id="bannersList" style="margin-top:8px">Loading...</div>
+</div>
+</div>
+<div class="card">
+<h3>Shops List - Approve to show in main</h3>
+<div id="shopsList">Loading...</div>
+</div>
+</div>
+</div>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore, collection, addDoc, doc, deleteDoc, updateDoc, onSnapshot, query, where, getDocs, getCountFromServer, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+const firebaseConfig = {
+  apiKey: "AIzaSyBtcdBS75tgYJ5W1wilHT9y4rNI1LzUAHI",
+  authDomain: "website-1cb04.firebaseapp.com",
+  projectId: "website-1cb04",
+  storageBucket: "website-1cb04.firebasestorage.app",
+  messagingSenderId: "392147898697",
+  appId: "1:392147898697:web:faa25a34b938ccd739ca98",
+  measurementId: "G-RWF18VNE3E"
+};
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+let allShops=[], allCities=[], allBanners=[], currentUser=null;
+const msgEl = document.getElementById('msg');
+function setMsg(t,c=''){ msgEl.textContent=t; msgEl.className=c; }
+document.getElementById('loginBtn').onclick = async ()=>{
+  const e=document.getElementById('email').value.trim(), p=document.getElementById('pass').value;
+  setMsg('Logging in '+e+'...'); try{ const cred=await signInWithEmailAndPassword(auth,e,p); setMsg('✅ SUCCESS UID: '+cred.user.uid,'ok'); }catch(err){ setMsg('❌ '+err.code+': '+err.message,'err'); }
+};
+document.getElementById('resetBtn').onclick = async ()=>{ const e=document.getElementById('email').value.trim(); try{ await sendPasswordResetEmail(auth,e); setMsg('✅ Reset sent to '+e,'ok'); }catch(err){ setMsg('❌ '+err.code,'err'); } };
+onAuthStateChanged(auth, (user)=>{
+  if(user){ currentUser=user; document.getElementById('authArea').style.display='none'; document.getElementById('dashboard').style.display='block'; loadAll(); }
+  else{ document.getElementById('authArea').style.display='block'; document.getElementById('dashboard').style.display='none'; }
+});
+function loadAll(){
+  onSnapshot(collection(db, "cities"), snap=>{ allCities=snap.docs.map(d=>({id:d.id, ...d.data()})); renderCities(); });
+  onSnapshot(collection(db, "shops"), snap=>{ allShops=snap.docs.map(d=>({id:d.id, ...d.data()})); renderShops(); updateAnalytics(); });
+  onSnapshot(collection(db, "banners"), snap=>{ allBanners=snap.docs.map(d=>({id:d.id, ...d.data()})); renderBanners(); updateAnalytics(); });
+}
+function renderCities(){
+  document.getElementById('citiesList').innerHTML = allCities.map(c=>`<div class="row card"><span>${c.name}</span><button class="danger" onclick="deleteCity('${c.id}')">Delete</button></div>`).join('') || '<div class="muted">No cities - Add Jaora, Raghogarh</div>';
+  const opts = allCities.map(c=>`<option value="${c.name}">${c.name}</option>`).join('');
+  document.getElementById('shopCity').innerHTML='<option value="">Select City</option>'+opts;
+  document.getElementById('bannerCity').innerHTML='<option value="">City</option>'+opts;
+}
+window.addCity = async ()=>{ const v=document.getElementById('newCity').value.trim(); if(!v) return alert('Enter city'); if(allCities.find(c=>c.name.toLowerCase()===v.toLowerCase())) return alert('Exists'); await addDoc(collection(db,"cities"),{name:v,active:true,createdAt:serverTimestamp(),createdBy:currentUser?.email}); document.getElementById('newCity').value=''; };
+window.deleteCity = async (id)=>{ if(!confirm('Delete?'))return; await deleteDoc(doc(db,"cities",id)); };
+function renderShops(){
+  document.getElementById('shopsList').innerHTML = allShops.map(s=>`
+    <div class="card">
+      <div class="row"><b>${s.name}</b><span style="font-size:11px">${s.city||''} ${s.area? '· '+s.area:''} · ${s.category||''}</span></div>
+      <div class="muted" style="font-size:11px">Mobile UNIQUE: ${s.phone} · Owner Email: ${s.ownerEmail||s.createdBy||'No email'} · Timing: ${s.open||'09:00 AM'} - ${s.close||'09:00 PM'}</div>
+      <div class="muted" style="font-size:11px">Plan: ${s.plan||'Rs 500/week'} · Approved: ${s.approved? '✅ Yes':'❌ No - Click Approve to show in main'}</div>
+      <div class="row" style="margin-top:6px"><span class="muted" style="font-size:11px">Views: ${s.views||0} · Calls: ${s.callClicks||0} · Map: ${s.mapClicks||0}</span>
+      <span><button onclick="approveShop('${s.id}')">${s.approved?'Approved ✅':'Approve to show in main'}</button><button class="danger" onclick="deleteShop('${s.id}')">Delete</button></span></div>
+    </div>
+  `).join('') || '<div class="muted">No shops</div>';
+}
 window.addShop = async ()=>{
   const name=document.getElementById('shopName').value.trim();
   const phone=document.getElementById('shopPhone').value.trim().replace(/\D/g,'');
@@ -11,26 +152,19 @@ window.addShop = async ()=>{
   const insta=document.getElementById('shopInsta').value.trim();
   const fb=document.getElementById('shopFb').value.trim();
   const map=document.getElementById('shopMap').value.trim();
-
   if(!name||!phone||!city) return alert('Name, Mobile, City required');
   if(phone.length!==10) return alert('Mobile 10 digits');
-  if(!ownerEmail) return alert('Owner Email required - So owner can login at /shop/');
+  if(!ownerEmail) return alert('Owner Email required - So owner can login at /shop/ with email+password');
   if(!ownerPass || ownerPass.length<6) return alert('Owner Password required min 6 chars');
-
-  // 1. Mobile UNIQUE check - Across all shops
-  const qPhone=query(collection(db,"shops"),where("phone","==",phone));
-  const snapPhone=await getDocs(qPhone);
-  if(!snapPhone.empty) return alert('❌ Mobile '+phone+' already exists - Must be UNIQUE across all shops');
-
-  // 2. Email UNIQUE check - NEW - One email per shop
-  const qEmail=query(collection(db,"shops"),where("ownerEmail","==",ownerEmail));
-  const snapEmail=await getDocs(qEmail);
-  if(!snapEmail.empty) return alert('❌ Owner Email '+ownerEmail+' already exists - One email per shop - Use different email');
-
+  // Mobile UNIQUE check
+  const q=query(collection(db,"shops"),where("phone","==",phone));
+  const snap=await getDocs(q);
+  if(!snap.empty) return alert('❌ Mobile '+phone+' already exists - Must be UNIQUE across all shops');
   setMsg('Creating owner account '+ownerEmail+'...', '');
-
   try{
     // Create Firebase Auth user for owner
+    // Note: This will sign out admin, so we need to handle - Use secondary app or create via admin SDK would be better
+    // For now, try create - If fails because email exists, continue
     try{
       const secondaryApp = initializeApp(firebaseConfig, 'secondary');
       const secondaryAuth = getAuth(secondaryApp);
@@ -38,15 +172,15 @@ window.addShop = async ()=>{
       setMsg('✅ Owner account created: '+ownerEmail, 'ok');
     }catch(e){
       if(e.code==='auth/email-already-in-use'){
-        setMsg('Owner email already exists in Auth - Using existing account', '');
-      } else {
-        console.log('Owner creation error:', e.code);
+        setMsg('Owner email already exists - Using existing account', '');
+      } else if(e.code!=='auth/email-already-in-use'){
+        console.log('Owner creation error (may already exist):', e.code);
+        // Continue anyway - Owner may already have account
       }
     }
-
-    // Create shop with ownerEmail field
+    // Create shop with ownerEmail
     await addDoc(collection(db,"shops"),{
-      name,phone,ownerEmail,
+      name,phone,ownerEmail, // NEW FIELD - Owner can login with this email
       city,area,category,open,close,insta,fb,map,
       approved:false,
       plan:"Rs 500/week per category container",
@@ -57,14 +191,28 @@ window.addShop = async ()=>{
       ownerCreated:true,
       timingDays:["Mon","Tue","Wed","Thu","Fri","Sat","Sun"]
     });
-
-    alert('✅ Shop added!\n\nOwner Email: '+ownerEmail+'\nOwner Password: '+ownerPass+'\n\nOwner can login at /shop/ with email+password\n\nMobile UNIQUE: '+phone+'\nEmail UNIQUE: '+ownerEmail);
+    alert('✅ Shop added!\n\nOwner Email: '+ownerEmail+'\nOwner Password: '+ownerPass+'\n\nOwner can login at /shop/ with email+password\n\nMobile UNIQUE enforced: '+phone);
     
+    // Clear form
     ['shopName','shopPhone','shopOwnerEmail','shopOwnerPass','shopArea'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
-    setMsg('✅ Shop added for owner '+ownerEmail, 'ok');
-
+    setMsg('✅ Shop added for owner '+ownerEmail+' - Tell owner to login at /shop/ with email+password', 'ok');
   }catch(err){
     setMsg('❌ Error: '+err.code+' '+err.message, 'err');
     console.error(err);
   }
 };
+window.approveShop = async (id)=>{ await updateDoc(doc(db,"shops",id),{approved:true,approvedAt:serverTimestamp(),approvedBy:currentUser?.email}); };
+window.deleteShop = async (id)=>{ if(!confirm('Delete? Mobile free'))return; await deleteDoc(doc(db,"shops",id)); };
+function renderBanners(){
+  document.getElementById('bannersList').innerHTML = allBanners.map(b=>`<div class="card row"><span><b>${b.title}</b> - Rs ${b.price||2000}<br><small class="muted">${b.url}</small></span><button class="danger" onclick="deleteBanner('${b.id}')">Delete</button></div>`).join('') || '<div class="muted">No banners</div>';
+}
+window.addBanner = async ()=>{ const t=document.getElementById('bannerTitle').value.trim(), u=document.getElementById('bannerUrl').value.trim(), c=document.getElementById('bannerCity').value, p=document.getElementById('bannerPrice').value||2000; if(!t||!u) return alert('Title URL required'); await addDoc(collection(db,"banners"),{title:t,url:u,city:c,price:parseInt(p),clicks:0,active:true,createdAt:serverTimestamp()}); };
+window.deleteBanner = async (id)=>{ if(!confirm('Delete?'))return; await deleteDoc(doc(db,"banners",id)); };
+async function updateAnalytics(){
+  try{
+    const s=await getCountFromServer(collection(db,"shops")), p=await getCountFromServer(collection(db,"products")), b=await getCountFromServer(collection(db,"banners")), c=await getCountFromServer(collection(db,"cities"));
+    document.getElementById('analytics').innerHTML=`<div class="grid"><div class="card">Shops: <b>${s.data().count}</b></div><div class="card">Products: <b>${p.data().count}</b></div><div class="card">Banners: <b>${b.data().count}</b></div><div class="card">Cities: <b>${c.data().count}</b></div></div>`;
+  }catch(e){ document.getElementById('analytics').innerHTML='Error: '+e.message; }
+}
+</script>
+</body></html>
