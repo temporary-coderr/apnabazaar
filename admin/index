@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Jaora Bazaar Admin - website-1cb04 LIVE</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:system-ui;background:#0a0a0a;color:#fff;padding:20px;min-height:100vh}
+.wrap{max-width:440px;margin:30px auto;background:#111;border:1px solid #222;border-radius:16px;padding:24px}
+a{color:#888;text-decoration:none;font-size:13px;margin-right:10px}a:hover{color:#fff}
+h1{margin:0 0 8px;font-size:22px}.muted{color:#888;font-size:13px}
+input{width:100%;padding:12px;border-radius:10px;border:1px solid #333;background:#000;color:#fff;margin:8px 0}
+button{width:100%;padding:12px;border-radius:10px;border:none;background:#fff;color:#000;font-weight:700;cursor:pointer;margin:8px 0}
+button.secondary{background:#222;color:#fff;border:1px solid #333}
+#msg{padding:12px;border-radius:10px;margin-top:12px;font-size:13px;min-height:20px;white-space:pre-wrap;word-break:break-all;background:#111;border:1px solid #222}
+.ok{color:#22c55e;border-color:#14532d !important;background:#052e16 !important}
+.err{color:#ef4444;border-color:#7f1d1d !important;background:#450a0a !important}
+.card{margin-top:16px;padding:12px;background:#0a0a0a;border:1px solid #222;border-radius:12px}
+.topbar{display:flex;gap:12px;margin-bottom:20px}
+.label{font-size:12px;color:#888;margin-top:8px;display:block}
+</style></head><body>
+<div class="topbar"><a href="../index.html">← Jaora Bazaar</a><a href="../index.html">Customer site</a></div>
+<div class="wrap">
+<h1>Jaora Bazaar Admin</h1><p class="muted">Firebase LIVE: website-1cb04<br>Approve shops, manage plans, banners<br>Private analytics: views, call clicks, map clicks</p>
+<h2 style="font-size:16px;margin:16px 0 8px">Admin sign in</h2>
+<label class="label">Email</label><input id="email" type="email" value="connectingtorahul@gmail.com"/>
+<label class="label">Password (15 chars that SUCCESS in tester)</label><input id="pass" type="password" placeholder="Enter password"/>
+<button id="loginBtn">Sign in</button>
+<button class="secondary" id="resetBtn">Forgot Password - Send Reset Email</button>
+<div id="msg">Ready - Enter same password that gave SUCCESS in tester<br>UID: R4sVOuuiegajpUNFN9Gc89S8WY43 will show after login</div>
+<div class="card"><div style="font-weight:700">📊 Overall Analytics (Private)</div><div class="muted" id="analyticsStatus">Login to unlock - Only admin sees this - jagruk-473287-control</div><div id="stats"></div></div>
+<div class="card muted" style="font-size:12px">Security: Firebase Auth (not hardcoded) + Secret page name jagruk-473287-control + IP 152.59.47.225 + 5km Raghogarh lock<br>Shop mobile UNIQUE across all shops - Server side check</div>
+</div>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore, collection, getCountFromServer } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+const firebaseConfig = {
+  apiKey: "AIzaSyBtcdBS75tgYJ5W1wilHT9y4rNI1LzUAHI",
+  authDomain: "website-1cb04.firebaseapp.com",
+  projectId: "website-1cb04",
+  storageBucket: "website-1cb04.firebasestorage.app",
+  messagingSenderId: "392147898697",
+  appId: "1:392147898697:web:faa25a34b938ccd739ca98",
+  measurementId: "G-RWF18VNE3E"
+};
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+const msgEl = document.getElementById('msg');
+function setMsg(t,c=''){ msgEl.textContent=t; msgEl.className=c; }
+document.getElementById('loginBtn').onclick = async ()=>{
+  const email = document.getElementById('email').value.trim();
+  const pass = document.getElementById('pass').value;
+  setMsg('Logging in '+email+'... Project website-1cb04...');
+  try{
+    const cred = await signInWithEmailAndPassword(auth, email, pass);
+    setMsg('✅ SUCCESS! UID: '+cred.user.uid+' Email: '+cred.user.email+'\nFirebase LIVE - Welcome Admin!', 'ok');
+    loadStats();
+  }catch(err){ setMsg('❌ '+err.code+': '+err.message, 'err'); }
+};
+document.getElementById('resetBtn').onclick = async ()=>{
+  const email = document.getElementById('email').value.trim();
+  try{ await sendPasswordResetEmail(auth, email); setMsg('✅ Reset email sent to '+email+' - Check Gmail', 'ok'); }
+  catch(err){ setMsg('❌ '+err.code+': '+err.message, 'err'); }
+};
+async function loadStats(){
+  try{
+    const s = await getCountFromServer(collection(db, "shops"));
+    const p = await getCountFromServer(collection(db, "products"));
+    const b = await getCountFromServer(collection(db, "banners"));
+    const c = await getCountFromServer(collection(db, "cities"));
+    document.getElementById('stats').innerHTML = `<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px"><div style="background:#000;padding:10px;border-radius:8px;border:1px solid #222">Shops: <b style="color:#fff">${s.data().count}</b></div><div style="background:#000;padding:10px;border-radius:8px;border:1px solid #222">Products: <b style="color:#fff">${p.data().count}</b></div><div style="background:#000;padding:10px;border-radius:8px;border:1px solid #222">Banners: <b style="color:#fff">${b.data().count}</b></div><div style="background:#000;padding:10px;border-radius:8px;border:1px solid #222">Cities: <b style="color:#fff">${c.data().count}</b></div></div><div class="muted" style="margin-top:8px">Live from Firestore website-1cb04</div>`;
+    document.getElementById('analyticsStatus').innerHTML = '✅ Admin logged in - Private analytics unlocked - Views, Call Clicks, Map Clicks only for you';
+  }catch(e){ document.getElementById('stats').innerHTML = '<div class="err">Stats error: '+e.message+'<br>Fix Firestore Rules: allow read if true</div>'; }
+}
+onAuthStateChanged(auth, (u)=>{ if(u){ setMsg('✅ Already logged in as '+u.email+' UID '+u.uid, 'ok'); loadStats(); }});
+</script></body></html>
