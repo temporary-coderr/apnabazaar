@@ -28,8 +28,8 @@ button.danger{background:#450a0a;color:#ef4444;border:1px solid #7f1d1d}
 
 <div id="authArea" class="card">
 <h3>Admin Sign In</h3>
-<input id="email" type="email" value="connectingtorahul@gmail.com" style="width:260px"/>
-<input id="pass" type="password" placeholder="15-char password that SUCCESS" style="width:180px"/>
+<input id="email" type="email" value="your email here" style="width:260px"/>
+<input id="pass" type="password" placeholder="type your password" style="width:180px"/>
 <button id="loginBtn">Sign in</button>
 <button id="resetBtn" style="background:#222;color:#fff;border:1px solid #333">Reset Email</button>
 <div id="msg" style="margin-top:8px">Enter password that SUCCESS in tester - UID R4sVOuuiegajpUNFN9Gc89S8WY43</div>
