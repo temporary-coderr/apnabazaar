@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Jaora Bazaar | Local Shops - LIVE Firebase</title>
+  <link rel="stylesheet" href="css/site.css" />
+</head>
+<body>
+  <header class="top">
+    <div class="wrap">
+      <a class="brand" href="index.html">🛍 Jaora Bazaar</a>
+      <a class="btn secondary" href="shop.html">Shop Owner Login</a>
+    </div>
+  </header>
+  <main class="wrap">
+    <section class="hero">
+      <p class="pill">Your local marketplace - LIVE</p>
+      <h1>Discover shops around you.</h1>
+      <p class="muted">Browse local businesses and products. Contact shops directly - no delivery service required. Firebase: website-1cb04</p>
+    </section>
+    <div id="bannerArea"></div>
+    <section class="panel">
+      <div class="bar">
+        <input id="search" placeholder="Search shops or products..." />
+        <select id="town"><option value="">All towns</option></select>
+        <select id="category">
+          <option value="">All categories</option>
+          <option>Grocery</option><option>Clothing</option><option>Electronics</option><option>Food</option><option>Beauty</option><option>Other</option>
+        </select>
+        <button id="refresh">Refresh</button>
+      </div>
+    </section>
+    <h2>Local shops</h2>
+    <div id="shops" class="grid">Loading from Firebase website-1cb04...</div>
+    <h2>Products</h2>
+    <div id="products" class="grid">Loading...</div>
+    <p id="status" class="muted"></p>
+  </main>
+  <footer>Jaora Bazaar · Support local businesses · Firebase LIVE website-1cb04 · Private Analytics for Admin</footer>
+  <script type="module" src="js/customer.js"></script>
+</body>
+</html>
