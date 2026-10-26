@@ -1,175 +1,70 @@
-<!doctype html>
-<html lang="en"><head>
-<meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Secret Admin - jagruk-473287-control - Jaora Bazaar</title>
-<style>
-*{box-sizing:border-box}body{margin:0;font-family:system-ui;background:#0a0a0a;color:#fff;padding:16px}
-.wrap{max-width:1100px;margin:0 auto}
-.top{display:flex;gap:12px;margin-bottom:16px;font-size:13px}a{color:#888;text-decoration:none}a:hover{color:#fff}
-.card{background:#111;border:1px solid #222;border-radius:12px;padding:12px;margin:8px 0}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
-input,select{padding:10px;border-radius:8px;border:1px solid #333;background:#000;color:#fff;margin:4px}
-button{padding:8px 12px;border-radius:8px;border:none;background:#fff;color:#000;font-weight:700;cursor:pointer;margin:4px}
-button.danger{background:#450a0a;color:#ef4444;border:1px solid #7f1d1d}
-.muted{color:#888;font-size:12px}.ok{color:#22c55e}.err{color:#ef4444}
-.row{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
-.pill{background:#222;color:#fff;padding:2px 8px;border-radius:999px;font-size:11px}
-</style>
-</head><body>
-<div class="wrap">
-<div class="top">
-<a href="../index.html">← Customer site</a>
-<span class="pill">SECRET: jagruk-473287-control</span>
-<span class="muted">IP: 152.59.47.225 whitelist · 5km Raghogarh GPS lock · Firebase Auth</span>
-</div>
-
-<h1>Jaora Bazaar · Secret Admin</h1>
-<p class="muted">jagruk-473287-control - Private - Only you with Firebase login - Mobile UNIQUE enforced</p>
-
-<div id="authArea" class="card">
-<h3>Admin Sign In</h3>
-<input id="email" type="email" value="connectingtorahul@gmail.com" style="width:260px"/>
-<input id="pass" type="password" placeholder="15-char password that SUCCESS" style="width:180px"/>
-<button id="loginBtn">Sign in</button>
-<button id="resetBtn" style="background:#222;color:#fff;border:1px solid #333">Reset Email</button>
-<div id="msg" style="margin-top:8px">Enter password that SUCCESS in tester - UID R4sVOuuiegajpUNFN9Gc89S8WY43</div>
-</div>
-
-<div id="dashboard" style="display:none">
-
-<div class="card">
-<h3>📊 Overall Analytics (Private - Only you)</h3>
-<div id="analytics">Login to unlock</div>
-<div class="muted" style="margin-top:8px">Views, Call Clicks, Map Clicks, Book Clicks - Private only to admin - Owner sees only count not Rs - As you said</div>
-</div>
-
-<div class="grid">
-<div class="card">
-<h3>Location Master - Jaora, Raghogarh</h3>
-<div id="citiesList">Loading...</div>
-<div class="row"><input id="newCity" placeholder="Jaora / Raghogarh / Rajgarh / Bima Road"/><button onclick="addCity()">Add City</button></div>
-</div>
-
-<div class="card">
-<h3>Add Shop - Mobile UNIQUE</h3>
-<div class="muted">Shop Name can duplicate in same city - Mobile must be UNIQUE across all shops (server enforced)</div>
-<input id="shopName" placeholder="Shop Name - Sharma Electricals"/>
-<input id="shopPhone" placeholder="Mobile 10 digits UNIQUE - 9876543210"/>
-<select id="shopCity"><option>Select City</option></select>
-<input id="shopArea" placeholder="Area - Bima Road"/>
-<select id="shopCategory"><option value="">Category</option><option>Grocery</option><option>Clothing</option><option>Electronics</option><option>Food</option><option>Beauty</option><option>Other</option></select>
-<div class="row"><input id="shopOpen" value="09:00 AM" style="width:110px"/><input id="shopClose" value="09:00 PM" style="width:110px"/></div>
-<input id="shopInsta" placeholder="Instagram URL (optional)"/>
-<input id="shopFb" placeholder="Facebook URL (optional)"/>
-<input id="shopMap" placeholder="Google Map URL (optional)"/>
-<button onclick="addShop()">Add Shop - Rs 500/week per category</button>
-</div>
-
-<div class="card">
-<h3>Add Banner - Rs 2000/month - Every 8 products</h3>
-<input id="bannerTitle" placeholder="Banner Title - Diwali Offer"/>
-<input id="bannerUrl" placeholder="URL - https://wa.me/919876543210"/>
-<select id="bannerCity"><option>City</option></select>
-<input id="bannerPrice" value="2000" style="width:100px"/> /month
-<button onclick="addBanner()">Add Banner</button>
-<div id="bannersList" style="margin-top:8px">Loading...</div>
-</div>
-</div>
-
-<div class="card">
-<h3>Shops List - Approve, Plans, Private Clicks</h3>
-<div id="shopsList">Loading from Firebase website-1cb04...</div>
-</div>
-
-<div class="card muted" style="font-size:11px">
-Business: Rs 500/week per category container, Popular Rs 1500/month, Banner Rs 2000/month - Target Rs 70k/month - Sale 1cr<br>
-Privacy: Shop location/number public OK (shops want banner). Customer anonymous browsing, city/area only not exact GPS, phone only at order auto-delete after 7 days. Don't show earnings anywhere (owner sees only count not Rs). Click analytics private only to admin in secret admin, not to owners/customers.<br>
-Backend: Firebase website-1cb04 - apiKey AIzaSyBtcdBS75... - 50k reads/day ~5k customers/day - Storage unlimited - Auth free - Email/password free - OTP would cost Blaze $0.01 India<br>
-Repo private hides code/path, hosting public if URL known - Need password protection or IP rules - As you said
-</div>
-
-</div>
-</div>
-
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore, collection, addDoc, doc, deleteDoc, updateDoc, onSnapshot, query, where, getDocs, getCountFromServer, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyBtcdBS75tgYJ5W1wilHT9y4rNI1LzUAHI",
-  authDomain: "website-1cb04.firebaseapp.com",
-  projectId: "website-1cb04",
-  storageBucket: "website-1cb04.firebasestorage.app",
-  messagingSenderId: "392147898697",
-  appId: "1:392147898697:web:faa25a34b938ccd739ca98",
-  measurementId: "G-RWF18VNE3E"
-};
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
-
-let allShops=[], allCities=[], allBanners=[], currentUser=null;
-const msgEl = document.getElementById('msg');
-function setMsg(t,c=''){ msgEl.textContent=t; msgEl.className=c; }
-
-document.getElementById('loginBtn').onclick = async ()=>{
-  const e=document.getElementById('email').value.trim(), p=document.getElementById('pass').value;
-  setMsg('Logging in '+e+'...'); try{ const cred=await signInWithEmailAndPassword(auth,e,p); setMsg('✅ SUCCESS UID: '+cred.user.uid+' - Welcome Admin', 'ok'); }catch(err){ setMsg('❌ '+err.code+': '+err.message,'err'); }
-};
-document.getElementById('resetBtn').onclick = async ()=>{ const e=document.getElementById('email').value.trim(); try{ await sendPasswordResetEmail(auth,e); setMsg('✅ Reset sent to '+e,'ok'); }catch(err){ setMsg('❌ '+err.code,'err'); } };
-
-onAuthStateChanged(auth, async (user)=>{
-  if(user){ currentUser=user; document.getElementById('authArea').style.display='none'; document.getElementById('dashboard').style.display='block'; loadAll(); }
-  else{ document.getElementById('authArea').style.display='block'; document.getElementById('dashboard').style.display='none'; }
-});
-
-function loadAll(){
-  onSnapshot(collection(db, "cities"), snap=>{ allCities=snap.docs.map(d=>({id:d.id, ...d.data()})); renderCities(); });
-  onSnapshot(collection(db, "shops"), snap=>{ allShops=snap.docs.map(d=>({id:d.id, ...d.data()})); renderShops(); updateAnalytics(); });
-  onSnapshot(collection(db, "banners"), snap=>{ allBanners=snap.docs.map(d=>({id:d.id, ...d.data()})); renderBanners(); updateAnalytics(); });
-}
-
-function renderCities(){
-  document.getElementById('citiesList').innerHTML = allCities.map(c=>`<div class="row card"><span>${c.name}</span><button class="danger" onclick="deleteCity('${c.id}')">Delete</button></div>`).join('') || '<div class="muted">No cities</div>';
-  const opts = allCities.map(c=>`<option value="${c.name}">${c.name}</option>`).join('');
-  const sc=document.getElementById('shopCity'), bc=document.getElementById('bannerCity');
-  if(sc) sc.innerHTML='<option value="">Select City</option>'+opts;
-  if(bc) bc.innerHTML='<option value="">City</option>'+opts;
-}
-window.addCity = async ()=>{ const v=document.getElementById('newCity').value.trim(); if(!v) return alert('Enter city'); if(allCities.find(c=>c.name.toLowerCase()===v.toLowerCase())) return alert('Exists'); await addDoc(collection(db,"cities"),{name:v,active:true,createdAt:serverTimestamp(),createdBy:currentUser?.email}); document.getElementById('newCity').value=''; };
-window.deleteCity = async (id)=>{ if(!confirm('Delete?'))return; await deleteDoc(doc(db,"cities",id)); };
-
-function renderShops(){
-  document.getElementById('shopsList').innerHTML = allShops.map(s=>`
-    <div class="card">
-      <div class="row"><b>${s.name}</b><span class="pill">${s.city||''} ${s.area? '· '+s.area:''} ${s.category? '· '+s.category:''}</span></div>
-      <div class="muted">Mobile UNIQUE: ${s.phone} · Timing: ${s.open||'09:00 AM'} - ${s.close||'09:00 PM'} · Days: ${(s.timingDays||['Mon','Tue','Wed','Thu','Fri','Sat','Sun']).join(',')}</div>
-      <div class="muted">Plan: ${s.plan||'Rs 500/week'} · Popular: ${s.popular? 'Yes Rs 1500/month':'No'} · Banner: ${s.banner? 'Yes Rs 2000/month':'No'} · Approved: ${s.approved? 'Yes':'No'}</div>
-      <div class="row"><span class="muted">Views: ${s.views||0} · Calls: ${s.callClicks||0} · Map: ${s.mapClicks||0} · Book: ${s.bookClicks||0} (Private)</span>
-      <span><button onclick="approveShop('${s.id}')">${s.approved?'Approved':'Approve'}</button><button class="danger" onclick="deleteShop('${s.id}')">Delete</button></span></div>
-    </div>
-  `).join('') || '<div class="muted">No shops - Add first shop</div>';
-}
 window.addShop = async ()=>{
-  const name=document.getElementById('shopName').value.trim(), phone=document.getElementById('shopPhone').value.trim().replace(/\\D/g,''), city=document.getElementById('shopCity').value, area=document.getElementById('shopArea').value.trim(), category=document.getElementById('shopCategory').value, open=document.getElementById('shopOpen').value||'09:00 AM', close=document.getElementById('shopClose').value||'09:00 PM', insta=document.getElementById('shopInsta').value.trim(), fb=document.getElementById('shopFb').value.trim(), map=document.getElementById('shopMap').value.trim();
-  if(!name||!phone||!city) return alert('Name, Mobile, City required'); if(phone.length!==10) return alert('10 digits'); const q=query(collection(db,"shops"),where("phone","==",phone)); const snap=await getDocs(q); if(!snap.empty) return alert('❌ Mobile '+phone+' already exists - Must be UNIQUE'); await addDoc(collection(db,"shops"),{name,phone,city,area,category,open,close,insta,fb,map,approved:false,plan:"Rs 500/week per category container",popular:false,banner:false,views:0,callClicks:0,mapClicks:0,bookClicks:0,createdAt:serverTimestamp(),createdBy:currentUser?.email,timingDays:["Mon","Tue","Wed","Thu","Fri","Sat","Sun"]}); alert('✅ Shop added'); ['shopName','shopPhone','shopArea'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
-};
-window.approveShop = async (id)=>{ await updateDoc(doc(db,"shops",id),{approved:true,approvedAt:serverTimestamp(),approvedBy:currentUser?.email}); };
-window.deleteShop = async (id)=>{ if(!confirm('Delete? Mobile free'))return; await deleteDoc(doc(db,"shops",id)); };
+  const name=document.getElementById('shopName').value.trim();
+  const phone=document.getElementById('shopPhone').value.trim().replace(/\D/g,'');
+  const ownerEmail=document.getElementById('shopOwnerEmail').value.trim().toLowerCase();
+  const ownerPass=document.getElementById('shopOwnerPass').value;
+  const city=document.getElementById('shopCity').value;
+  const area=document.getElementById('shopArea').value.trim();
+  const category=document.getElementById('shopCategory').value;
+  const open=document.getElementById('shopOpen').value||'09:00 AM';
+  const close=document.getElementById('shopClose').value||'09:00 PM';
+  const insta=document.getElementById('shopInsta').value.trim();
+  const fb=document.getElementById('shopFb').value.trim();
+  const map=document.getElementById('shopMap').value.trim();
 
-function renderBanners(){
-  document.getElementById('bannersList').innerHTML = allBanners.map(b=>`<div class="card row"><span><b>${b.title}</b> - ${b.city||''} - Rs ${b.price||2000}<br><small class="muted">${b.url} · Clicks ${b.clicks||0}</small></span><button class="danger" onclick="deleteBanner('${b.id}')">Delete</button></div>`).join('') || '<div class="muted">No banners</div>';
-}
-window.addBanner = async ()=>{ const t=document.getElementById('bannerTitle').value.trim(), u=document.getElementById('bannerUrl').value.trim(), c=document.getElementById('bannerCity').value, p=document.getElementById('bannerPrice').value||2000; if(!t||!u) return alert('Title URL required'); await addDoc(collection(db,"banners"),{title:t,url:u,city:c,price:parseInt(p),clicks:0,active:true,createdAt:serverTimestamp()}); alert('Banner added'); };
-window.deleteBanner = async (id)=>{ if(!confirm('Delete?'))return; await deleteDoc(doc(db,"banners",id)); };
+  if(!name||!phone||!city) return alert('Name, Mobile, City required');
+  if(phone.length!==10) return alert('Mobile 10 digits');
+  if(!ownerEmail) return alert('Owner Email required - So owner can login at /shop/');
+  if(!ownerPass || ownerPass.length<6) return alert('Owner Password required min 6 chars');
 
-async function updateAnalytics(){
+  // 1. Mobile UNIQUE check - Across all shops
+  const qPhone=query(collection(db,"shops"),where("phone","==",phone));
+  const snapPhone=await getDocs(qPhone);
+  if(!snapPhone.empty) return alert('❌ Mobile '+phone+' already exists - Must be UNIQUE across all shops');
+
+  // 2. Email UNIQUE check - NEW - One email per shop
+  const qEmail=query(collection(db,"shops"),where("ownerEmail","==",ownerEmail));
+  const snapEmail=await getDocs(qEmail);
+  if(!snapEmail.empty) return alert('❌ Owner Email '+ownerEmail+' already exists - One email per shop - Use different email');
+
+  setMsg('Creating owner account '+ownerEmail+'...', '');
+
   try{
-    const s=await getCountFromServer(collection(db,"shops")), p=await getCountFromServer(collection(db,"products")), b=await getCountFromServer(collection(db,"banners")), c=await getCountFromServer(collection(db,"cities"));
-    const totalViews=allShops.reduce((a,x)=>a+(x.views||0),0), totalCalls=allShops.reduce((a,x)=>a+(x.callClicks||0),0), totalMap=allShops.reduce((a,x)=>a+(x.mapClicks||0),0), totalBook=allShops.reduce((a,x)=>a+(x.bookClicks||0),0);
-    document.getElementById('analytics').innerHTML=`<div class="grid"><div class="card">Shops: <b>${s.data().count}</b><br><small class="muted">Need ${Math.ceil(70000/500)} for 70k</small></div><div class="card">Products: <b>${p.data().count}</b></div><div class="card">Banners: <b>${b.data().count}</b> Rs ${b.data().count*2000}</div><div class="card">Cities: <b>${c.data().count}</b></div><div class="card">Views: <b>${totalViews}</b> (Private)</div><div class="card">Calls: <b>${totalCalls}</b></div><div class="card">Map: <b>${totalMap}</b></div><div class="card">Book: <b>${totalBook}</b></div></div>`;
-  }catch(e){ document.getElementById('analytics').innerHTML='Error: '+e.message+' - Check Firestore Rules allow read if true'; }
-}
-</script>
-</body></html>
+    // Create Firebase Auth user for owner
+    try{
+      const secondaryApp = initializeApp(firebaseConfig, 'secondary');
+      const secondaryAuth = getAuth(secondaryApp);
+      await createUserWithEmailAndPassword(secondaryAuth, ownerEmail, ownerPass);
+      setMsg('✅ Owner account created: '+ownerEmail, 'ok');
+    }catch(e){
+      if(e.code==='auth/email-already-in-use'){
+        setMsg('Owner email already exists in Auth - Using existing account', '');
+      } else {
+        console.log('Owner creation error:', e.code);
+      }
+    }
+
+    // Create shop with ownerEmail field
+    await addDoc(collection(db,"shops"),{
+      name,phone,ownerEmail,
+      city,area,category,open,close,insta,fb,map,
+      approved:false,
+      plan:"Rs 500/week per category container",
+      popular:false,banner:false,
+      views:0,callClicks:0,mapClicks:0,bookClicks:0,
+      createdAt:serverTimestamp(),
+      createdBy:currentUser?.email,
+      ownerCreated:true,
+      timingDays:["Mon","Tue","Wed","Thu","Fri","Sat","Sun"]
+    });
+
+    alert('✅ Shop added!\n\nOwner Email: '+ownerEmail+'\nOwner Password: '+ownerPass+'\n\nOwner can login at /shop/ with email+password\n\nMobile UNIQUE: '+phone+'\nEmail UNIQUE: '+ownerEmail);
+    
+    ['shopName','shopPhone','shopOwnerEmail','shopOwnerPass','shopArea'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
+    setMsg('✅ Shop added for owner '+ownerEmail, 'ok');
+
+  }catch(err){
+    setMsg('❌ Error: '+err.code+' '+err.message, 'err');
+    console.error(err);
+  }
+};
