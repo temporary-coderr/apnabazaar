@@ -1,4 +1,3 @@
-
 // JAORA BAZAAR - Admin Logic FULL - website-1cb04 LIVE
 // Business: Rs 500/week per category container, Popular Rs 1500/month, Banner Rs 2000/month
 import { db, auth } from "./firebase-config.js";
