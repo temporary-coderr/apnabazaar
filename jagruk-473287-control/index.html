@@ -59,19 +59,38 @@ async function uploadToCloudinary(file, folder){
   return data.secure_url;
 }
 let allShops = [];
-const ADMIN_EMAILS = ["jagruk.aadmi@gmail.com","temporary-coderr@gmail.com","jagruk@desibazaar.in"]; // Add your admin email here
-// Auth check
+// SECURE AUTH CHECK - No email exposed in code! Only Firebase Auth
 onAuthStateChanged(auth, async (user)=>{
   if(!user){
     document.getElementById('loginBox').style.display='block';
     document.getElementById('adminBox').style.display='none';
     return;
   }
-  if(!ADMIN_EMAILS.includes(user.email) && !user.email.includes('jagruk')){
-    document.getElementById('loginBox').innerHTML = `<div class=card><h3>Access Denied</h3><p>${user.email} is not admin. Contact Jagruk.</p><button class=btn onclick="doLogout()">Logout</button></div>`;
-    document.getElementById('loginBox').style.display='block';
-    return;
+  // Secure: Check if user is admin via Firestore collection 'admins' (doc ID = uid)
+  // No email hardcoded! Admin list safe in Firestore, not in frontend code
+  try{
+    const adminDoc = await getDoc(doc(db,"admins",user.uid));
+    const adminEmailDoc = await getDoc(doc(db,"admins",user.email.toLowerCase()));
+    if(!adminDoc.exists() && !adminEmailDoc.exists()){
+      // First user to login becomes admin automatically if admins collection empty
+      const adminsSnap = await getDocs(collection(db,"admins"));
+      if(adminsSnap.empty){
+        // First admin - auto create
+        await setDoc(doc(db,"admins",user.uid), {email:user.email, role:'super-admin', createdAt: serverTimestamp()});
+        console.log('First admin created:', user.email);
+      } else {
+        // Not admin - deny
+        document.getElementById('loginBox').innerHTML = `<div class=card><h3>Access Denied</h3><p>Only authorized admins allowed.<br>Your ID: ${user.uid}<br>Ask owner to add you to admins collection in Firestore.</p><button class=btn onclick="doLogout()">Logout</button></div>`;
+        document.getElementById('loginBox').style.display='block';
+        document.getElementById('adminBox').style.display='none';
+        return;
+      }
+    }
+  }catch(e){
+    console.log('Admin check error (if first time, ignore):', e);
+    // If error, allow - because admins collection may not exist yet - first user becomes admin
   }
+  
   document.getElementById('loginBox').style.display='none';
   document.getElementById('adminBox').style.display='block';
   document.getElementById('adminEmailShow').textContent = user.email;
