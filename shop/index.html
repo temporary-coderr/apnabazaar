@@ -1,142 +1,200 @@
-
-<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>Shop Owner - Desi Bazaar</title>
-<style>body{font-family:sans-serif;background:#FFFBF5;padding:16px}.card{background:white;border-radius:16px;padding:16px;margin:12px 0;box-shadow:0 4px 12px rgba(0,0,0,.06)}.locked{opacity:0.5;pointer-events:none}.badge{padding:4px 8px;border-radius:6px;font-size:12px}.badge-free{background:#F3F4F6}.badge-premium{background:#FFF0E6;color:#FF6B2C;border:1px solid #FF6B2C}</style>
+<style>
+body{font-family:'Plus Jakarta Sans',sans-serif;background:#FFFBF5;padding:16px;margin:0}
+.card{background:white;border-radius:16px;padding:16px;margin:12px 0;box-shadow:0 4px 12px rgba(0,0,0,.06);border:1px solid #F3E8D3}
+.btn{background:#FF6B2C;color:white;border:0;padding:12px 20px;border-radius:10px;font-weight:700;cursor:pointer;width:100%;margin-top:8px}
+.btn:disabled{opacity:0.5;cursor:not-allowed}
+.badge{padding:6px 12px;border-radius:20px;font-size:12px;font-weight:700;display:inline-block}
+.badge-free{background:#F3F4F6;color:#6B7280}.badge-premium{background:#FFF0E6;color:#FF6B2C;border:1px solid #FF6B2C}
+.preview{width:100%;height:160px;background:#FFF0E6;border-radius:12px;overflow:hidden;display:none;margin:8px 0;border:2px dashed #FF6B2C}
+.preview img{width:100%;height:100%;object-fit:cover}
+input[type=file]{width:100%;padding:10px;background:#FFFBF5;border:2px dashed #F3E8D3;border-radius:10px;margin:6px 0}
+input[type=text]{width:100%;padding:12px;border:1px solid #E5E7EB;border-radius:10px;margin:6px 0;font-size:14px}
+h1{font-family:'Fraunces',serif}
+</style>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore, collection, query, where, getDocs, doc, getDoc, updateDoc, addDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
-
-const firebaseConfig = {apiKey:"YOUR_KEY", authDomain:"website-1cb04.firebaseapp.com", projectId:"website-1cb04", storageBucket:"website-1cb04.appspot.com"};
+import { getFirestore, collection, query, where, getDocs, doc, updateDoc, addDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+const firebaseConfig = {
+  apiKey: "AIzaSyBtcdBS75tgYJ5W1wilHT9y4rNI1LzUAHI",
+  authDomain: "website-1cb04.firebaseapp.com",
+  projectId: "website-1cb04",
+  storageBucket: "website-1cb04.firebasestorage.app",
+  messagingSenderId: "392147898697",
+  appId: "1:392147898697:web:faa25a34b938ccd739ca98"
+};
 const app = initializeApp(firebaseConfig);
-const auth = getAuth(app); const db = getFirestore(app); const storage = getStorage(app);
-
+const auth = getAuth(app);
+const db = getFirestore(app);
 let currentShop = null;
 let productCount = 0;
-
+// --- CLOUDINARY CONFIG - YOUR CLOUD NAME tizekip0 ---
+const CLOUDINARY_CLOUD_NAME = "tizekip0";
+const CLOUDINARY_UPLOAD_PRESET = "desi-bazaar";
+async function uploadToCloudinary(file, folder="desi-bazaar/shops"){
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+  formData.append('folder', folder);
+  
+  const response = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`, {
+    method: 'POST',
+    body: formData
+  });
+  
+  if(!response.ok){
+    const err = await response.json();
+    throw new Error(err.error?.message || 'Upload failed - Check preset is Unsigned!');
+  }
+  
+  const data = await response.json();
+  return data.secure_url;
+}
+// --- END CLOUDINARY ---
 onAuthStateChanged(auth, async (user)=>{
-  if(!user) return;
+  if(!user){ document.body.innerHTML='<div class=card><p>Please login at /shop/ with owner email</p></div>'; return; }
   const q = query(collection(db,"shops"), where("ownerEmail","==",user.email));
   const snap = await getDocs(q);
-  if(snap.empty){ document.body.innerHTML="No shop for "+user.email; return; }
+  if(snap.empty){ document.body.innerHTML='<div class=card><p>No shop found for '+user.email+'<br>Contact admin to create shop</p></div>'; return; }
   currentShop = {id:snap.docs[0].id, ...snap.docs[0].data()};
-  // Load product count
   const pq = query(collection(db,"products"), where("shopId","==",currentShop.id));
   const psnap = await getDocs(pq);
   productCount = psnap.size;
   renderShop();
 });
-
 function renderShop(){
   const isPremium = currentShop.isPremium && currentShop.subscriptionStatus==='active';
   const freeLimit = 10;
   document.getElementById('shopName').textContent = currentShop.name;
+  document.getElementById('shopPhone').textContent = currentShop.phone;
   document.getElementById('status').innerHTML = isPremium 
-    ? `<span class="badge badge-premium">✅ Premium - Rs ${currentShop.premiumPrice||500}/week - Till ${currentShop.premiumUntil?.toDate?.().toLocaleDateString()||''}</span>`
-    : `<span class="badge badge-free">🆓 Free Plan - 10 images free, Upgrade for social links & map</span>`;
+    ? `<span class="badge badge-premium">✅ Premium Rs ${currentShop.premiumPrice||500}/week - Active</span>`
+    : `<span class="badge badge-free">🆓 Free Plan - Banner + 10 images free</span>`;
   
-  // Banner upload - ALLOWED FOR FREE NOW
-  document.getElementById('bannerSection').style.display='block';
-  
-  // Product upload - Check limit for free
   document.getElementById('productCount').textContent = productCount + "/" + (isPremium ? "Unlimited" : freeLimit);
   if(!isPremium && productCount >= freeLimit){
     document.getElementById('productUploadBtn').disabled=true;
     document.getElementById('limitMsg').textContent="Free limit 10 reached! Upgrade to Premium for unlimited.";
   }
-  
-  // Premium features locked
-  document.getElementById('socialSection').style.display = isPremium ? 'block' : 'none';
   document.getElementById('socialLocked').style.display = isPremium ? 'none' : 'block';
+  document.getElementById('socialSection').style.display = isPremium ? 'block' : 'none';
   document.getElementById('analyticsSection').style.display = isPremium ? 'block' : 'none';
   
   if(isPremium){
     document.getElementById('viewsCount').textContent = currentShop.views||0;
+    document.getElementById('callCount').textContent = currentShop.callClicks||0;
+    document.getElementById('mapCount').textContent = currentShop.mapClicks||0;
+  }
+  if(currentShop.bannerImage){
+    const prev = document.getElementById('bannerPreview');
+    const img = document.getElementById('bannerImg');
+    img.src = currentShop.bannerImage;
+    prev.style.display='block';
+    document.getElementById('currentBanner').innerHTML = `<p style="font-size:12px;color:green;">Current banner: <a href="${currentShop.bannerImage}" target="_blank">View</a></p>`;
   }
 }
-
 window.uploadBanner = async ()=>{
   const file = document.getElementById('bannerFile').files[0];
-  if(!file) return alert('Select photo');
-  // FREE ALLOWED NOW
+  if(!file) return alert('Select photo first');
   const status = document.getElementById('bannerStatus');
-  status.textContent='Uploading...';
+  status.textContent='☁️ Uploading to Cloudinary (tizekip0)...';
+  status.style.color='#FF6B2C';
   try{
-    const path = `shops/${currentShop.id}/banner_${Date.now()}_${file.name}`;
-    const sRef = ref(storage, path);
-    await uploadBytes(sRef, file);
-    const url = await getDownloadURL(sRef);
-    await updateDoc(doc(db,"shops",currentShop.id), {bannerImage:url, bannerPath:path});
-    status.textContent='✅ Banner uploaded! Visible to all customers';
+    const url = await uploadToCloudinary(file, `desi-bazaar/shops/${currentShop.id}/banner`);
+    await updateDoc(doc(db,"shops",currentShop.id), {bannerImage:url});
+    status.textContent='✅ Banner uploaded! Visible to all customers on main page';
+    status.style.color='green';
     currentShop.bannerImage=url;
-  }catch(e){ status.textContent='❌ '+e.message; }
+    const prev = document.getElementById('bannerPreview');
+    const img = document.getElementById('bannerImg');
+    img.src = url;
+    prev.style.display='block';
+  }catch(e){ status.textContent='❌ '+e.message; status.style.color='red'; console.error(e); }
 }
-
 window.uploadProduct = async ()=>{
   const file = document.getElementById('productFile').files[0];
-  const name = document.getElementById('productName').value;
-  if(!file || !name) return alert('Enter product name and photo');
+  const name = document.getElementById('productName').value.trim();
+  const price = document.getElementById('productPrice').value.trim();
+  if(!file || !name) return alert('Enter product name and select photo');
   const isPremium = currentShop.isPremium && currentShop.subscriptionStatus==='active';
-  if(!isPremium && productCount >= 10) return alert('Free limit 10 reached! Upgrade');
+  if(!isPremium && productCount >= 10) return alert('Free limit 10 reached! Upgrade to Premium');
   
   const status = document.getElementById('productStatus');
-  status.textContent='Uploading product...';
+  status.textContent='☁️ Uploading product to Cloudinary...';
+  status.style.color='#FF6B2C';
   try{
-    const path = `shops/${currentShop.id}/products/${Date.now()}_${file.name}`;
-    const sRef = ref(storage, path);
-    await uploadBytes(sRef, file);
-    const url = await getDownloadURL(sRef);
+    const url = await uploadToCloudinary(file, `desi-bazaar/shops/${currentShop.id}/products`);
     await addDoc(collection(db,"products"), {
       shopId: currentShop.id,
       name: name,
+      price: price,
       image: url,
       createdAt: new Date()
     });
-    status.textContent='✅ Product added!';
+    status.textContent='✅ Product added! Visible on main page';
+    status.style.color='green';
     productCount++;
     document.getElementById('productCount').textContent = productCount + "/" + (isPremium ? "Unlimited" : "10");
-  }catch(e){ status.textContent='❌ '+e.message; }
+    document.getElementById('productName').value='';
+    document.getElementById('productPrice').value='';
+    document.getElementById('productFile').value='';
+    document.getElementById('productPreview').style.display='none';
+  }catch(e){ status.textContent='❌ '+e.message; status.style.color='red'; }
 }
 </script></head>
 <body>
-<h1 id="shopName">Loading...</h1>
-<div id="status" class="card"></div>
-
-<div id="bannerSection" class="card">
-  <h3>🏪 Shop Banner Photo (Free - Allowed)</h3>
-  <p>Upload your shop front photo - Visible to all customers</p>
-  <input type="file" id="bannerFile" accept="image/*"/>
-  <button onclick="uploadBanner()" style="background:#FF6B2C;color:white;border:0;padding:10px 20px;border-radius:8px;margin-top:8px;">Upload Banner</button>
-  <p id="bannerStatus"></p>
+<div class="card" style="background:linear-gradient(135deg,#FF6B2C,#FF8A50);color:white;">
+  <h1 id="shopName" style="margin:0;">Loading shop...</h1>
+  <p id="shopPhone" style="opacity:0.9;margin:4px 0;"></p>
+  <div id="status" style="margin-top:8px;"></div>
 </div>
-
 <div class="card">
-  <h3>📦 Products - <span id="productCount">0/10</span> (Free limit 10, Premium unlimited)</h3>
-  <input type="text" id="productName" placeholder="Product name (e.g. Saree)" style="width:100%;padding:8px;margin:4px 0;border:1px solid #ddd;border-radius:6px;"/>
-  <input type="file" id="productFile" accept="image/*"/>
-  <button id="productUploadBtn" onclick="uploadProduct()" style="background:#1A1A1A;color:white;border:0;padding:10px 20px;border-radius:8px;margin-top:8px;">Add Product</button>
-  <p id="productStatus"></p>
-  <p id="limitMsg" style="color:#FF6B2C;font-size:12px;"></p>
+  <h3>🏪 Shop Banner Photo - Free (Cloudinary)</h3>
+  <p style="font-size:13px;color:#6B7280;">Your shop front photo - Visible to all customers on Jaora Bazaar main page</p>
+  <div id="currentBanner"></div>
+  <input type="file" id="bannerFile" accept="image/*"/>
+  <div class="preview" id="bannerPreview"><img id="bannerImg"/></div>
+  <button class="btn" onclick="uploadBanner()">☁️ Upload Banner to Cloudinary</button>
+  <p id="bannerStatus" style="font-size:12px;margin-top:8px;"></p>
 </div>
-
+<div class="card">
+  <h3>📦 Products - <span id="productCount">0/10</span></h3>
+  <p style="font-size:13px;color:#6B7280;">Free: 10 products, Premium: Unlimited</p>
+  <input type="text" id="productName" placeholder="Product name * (e.g. Designer Saree)"/>
+  <input type="text" id="productPrice" placeholder="Price Rs (e.g. 1200)"/>
+  <input type="file" id="productFile" accept="image/*"/>
+  <div class="preview" id="productPreview"><img id="productImg"/></div>
+  <button id="productUploadBtn" class="btn" onclick="uploadProduct()" style="background:#1A1A1A;">☁️ Add Product</button>
+  <p id="productStatus" style="font-size:12px;margin-top:8px;"></p>
+  <p id="limitMsg" style="color:#FF6B2C;font-size:12px;font-weight:600;"></p>
+</div>
 <div id="socialLocked" class="card" style="background:#FFF0E6;border:1px dashed #FF6B2C;">
   <h3>🔒 Premium Features Locked</h3>
-  <p>❌ Instagram, Facebook, YouTube, Website links</p>
-  <p>❌ Google Map clickable pin</p>
-  <p>❌ WhatsApp Book button</p>
-  <p>❌ Verified badge & Top priority</p>
-  <p><b>Upgrade to Premium - Custom price available! Contact Admin</b></p>
+  <p style="font-size:13px;">❌ Instagram, Facebook, YouTube, Website links hidden</p>
+  <p style="font-size:13px;">❌ Google Map clickable pin hidden</p>
+  <p style="font-size:13px;">❌ WhatsApp Book button hidden</p>
+  <p style="font-size:13px;">❌ Verified badge & Top priority hidden</p>
+  <p style="font-weight:700;margin-top:8px;">Contact Admin for Premium - Custom price Rs 300-1000/week</p>
 </div>
-
 <div id="socialSection" class="card" style="display:none;">
-  <h3>🔗 Social Links (Premium Only)</h3>
-  <p>These links show to customers only if you are premium</p>
-  <!-- Add social inputs here -->
+  <h3>🔗 Social Links (Premium)</h3>
+  <p style="font-size:13px;">Your Instagram, Map, Book buttons are visible to customers!</p>
 </div>
-
 <div id="analyticsSection" class="card" style="display:none;">
-  <h3>📊 Analytics (Premium)</h3>
-  <p>👁 Views: <span id="viewsCount">0</span></p>
+  <h3>📊 Your Shop Analytics (Premium)</h3>
+  <p>👁 Views: <b><span id="viewsCount">0</span></b></p>
+  <p>📞 Call Clicks: <b><span id="callCount">0</span></b></p>
+  <p>📍 Map Clicks: <b><span id="mapCount">0</span></b></p>
 </div>
+<script>
+document.getElementById('bannerFile')?.addEventListener('change', e=>{
+  const f=e.target.files[0]; if(f){ const img=document.getElementById('bannerImg'); const prev=document.getElementById('bannerPreview'); img.src=URL.createObjectURL(f); prev.style.display='block'; }
+});
+document.getElementById('productFile')?.addEventListener('change', e=>{
+  const f=e.target.files[0]; if(f){ const img=document.getElementById('productImg'); const prev=document.getElementById('productPreview'); img.src=URL.createObjectURL(f); prev.style.display='block'; }
+});
+</script>
 </body></html>
