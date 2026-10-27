@@ -1,39 +1,48 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Secret Admin - Desi Bazaar | Jagruk Control</title>
+<title>Desi Bazaar - Apna Local Bazaar | Jaora, Raghogarh, Rajgarh</title>
+<meta name="description" content="Jaora ka apna bazaar - Local shops, products, services"/>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@700;800&family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
 :root{--orange:#FF6B2C;--orange2:#FF8A50;--bg:#FFFBF5;--cream:#FFF0E6;--border:#F3E8D3;--ink:#1A1A1A;--muted:#6B7280}
-*{box-sizing:border-box}body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);margin:0;padding:16px;color:var(--ink)}
+*{box-sizing:border-box}body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);margin:0;color:var(--ink)}
 h1,h2,h3{font-family:'Fraunces',serif}
-.top{background:linear-gradient(135deg,#1A1A1A,#2D2D2D);color:white;padding:20px 24px;border-radius:16px;display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
-.top b{color:#FF6B2C}
-.card{background:white;border-radius:16px;padding:18px;margin:14px 0;box-shadow:0 8px 24px rgba(0,0,0,.06);border:1px solid var(--border)}
-.input{width:100%;padding:12px 14px;border:1px solid #E5E7EB;border-radius:12px;margin:6px 0;font-size:14px;outline:none}
-.input:focus{border-color:var(--orange);box-shadow:0 0 0 3px rgba(255,107,44,.15)}
-.btn{background:var(--orange);color:white;border:0;padding:12px 18px;border-radius:12px;font-weight:800;cursor:pointer;transition:.2s}
-.btn:hover{transform:translateY(-1px);box-shadow:0 6px 16px rgba(255,107,44,.3)}
-.btn-dark{background:#1A1A1A}
-.btn-sm{padding:8px 14px;font-size:13px;border-radius:10px}
-.btn-approve{background:#10B981}.btn-reject{background:#EF4444}.btn-warn{background:#F59E0B}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-@media(max-width:700px){.grid{grid-template-columns:1fr}}
-.shop-row{display:flex;gap:14px;padding:14px;border:1px solid var(--border);border-radius:14px;margin:10px 0;background:white;align-items:flex-start}
-.shop-row img{width:90px;height:90px;border-radius:12px;object-fit:cover;background:var(--cream);border:1px solid var(--border)}
-.badge{padding:5px 10px;border-radius:20px;font-size:11px;font-weight:800;display:inline-block;margin:2px}
-.badge-pending{background:#FEF3C7;color:#92400E}.badge-approved{background:#D1FAE5;color:#065F46}.badge-premium{background:#FF6B2C;color:white}.badge-popular{background:#1A1A1A;color:#FFD700}.badge-banner{background:#3B82F6;color:white}
-.toggle{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;margin:4px 6px 4px 0}
-.toggle input{width:18px;height:18px}
-.stat{font-size:13px;color:var(--muted)}.stat b{color:var(--ink)}
-.preview{width:100%;height:140px;border-radius:12px;background:var(--cream);overflow:hidden;display:none;margin:8px 0;border:2px dashed var(--orange)}
-.preview img{width:100%;height:100%;object-fit:cover}
-hr{border:0;border-top:1px solid var(--border);margin:12px 0}
-.small{font-size:12px;color:var(--muted)}
+.header{background:white;border-bottom:1px solid var(--border);padding:12px 16px;position:sticky;top:0;z-index:50;display:flex;justify-content:space-between;align-items:center}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:18px}
+.brand img{width:36px;height:36px;border-radius:10px}
+.hero{background:linear-gradient(135deg,#FF6B2C,#FF8A50);color:white;padding:28px 16px;text-align:center}
+.hero h1{margin:0;font-size:28px}
+.filters{background:white;padding:12px 16px;border-bottom:1px solid var(--border);position:sticky;top:57px;z-index:40;display:flex;gap:8px;overflow-x:auto}
+.filter-btn{padding:8px 14px;border-radius:20px;border:1px solid var(--border);background:white;font-size:13px;font-weight:600;white-space:nowrap;cursor:pointer}
+.filter-btn.active{background:var(--ink);color:white;border-color:var(--ink)}
+.container{padding:12px 16px;max-width:1200px;margin:0 auto}
+.shop-card{background:white;border-radius:16px;border:1px solid var(--border);overflow:hidden;margin:12px 0;box-shadow:0 4px 16px rgba(0,0,0,.05)}
+.shop-banner{width:100%;height:180px;background:var(--cream);object-fit:cover;display:block}
+.shop-banner.placeholder{display:flex;align-items:center;justify-content:center;font-size:40px;color:#F3E8D3}
+.shop-body{padding:14px}
+.shop-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.shop-name{font-size:17px;font-weight:800;margin:0}
+.shop-meta{font-size:12px;color:var(--muted);margin:4px 0;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.badge{padding:4px 8px;border-radius:12px;font-size:10px;font-weight:800}
+.badge-verified{background:#D1FAE5;color:#065F46}.badge-premium{background:#FFF0E6;color:#FF6B2C;border:1px solid var(--orange)}.badge-popular{background:#1A1A1A;color:#FFD700}
+.btn-row{display:flex;gap:8px;margin-top:10px}
+.btn-call{flex:1;background:var(--ink);color:white;border:0;padding:10px;border-radius:12px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px}
+.btn-wa{flex:1;background:#25D366;color:white;border:0;padding:10px;border-radius:12px;font-weight:700;cursor:pointer}
+.btn-map{flex:1;background:white;border:1px solid var(--border);padding:10px;border-radius:12px;font-weight:700;cursor:pointer}
+.products{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:12px}
+@media(min-width:700px){.products{grid-template-columns:repeat(4,1fr)}}
+.product-card{border:1px solid var(--border);border-radius:12px;overflow:hidden;background:#FFFBF5}
+.product-card img{width:100%;height:110px;object-fit:cover;background:var(--cream)}
+.product-body{padding:8px}
+.product-name{font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.product-price{font-size:12px;font-weight:800;color:var(--orange);margin-top:2px}
+.search{width:100%;padding:12px 14px;border:1px solid var(--border);border-radius:12px;font-size:14px;outline:none}
+.search:focus{border-color:var(--orange);box-shadow:0 0 0 3px rgba(255,107,44,.15)}
+.no-img{width:100%;height:180px;background:linear-gradient(135deg,#FFF0E6,#F3E8D3);display:flex;align-items:center;justify-content:center;font-size:48px}
 </style>
 <script type="module">
-import { initializeApp, getApp, deleteApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore, collection, query, where, getDocs, doc, getDoc, setDoc, updateDoc, deleteDoc, addDoc, orderBy, limit, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, collection, query, where, getDocs, doc, updateDoc, increment, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 const firebaseConfig = {
   apiKey: "AIzaSyBtcdBS75tgYJ5W1wilHT9y4rNI1LzUAHI",
   authDomain: "website-1cb04.firebaseapp.com",
@@ -43,405 +52,144 @@ const firebaseConfig = {
   appId: "1:392147898697:web:faa25a34b938ccd739ca98"
 };
 const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
 const db = getFirestore(app);
-// Cloudinary
-const CLOUDINARY_CLOUD_NAME = "tizekip0";
-const CLOUDINARY_UPLOAD_PRESET = "desi-bazaar";
-async function uploadToCloudinary(file, folder){
-  const fd = new FormData();
-  fd.append('file', file);
-  fd.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
-  fd.append('folder', folder);
-  const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`, {method:'POST', body:fd});
-  const data = await res.json();
-  if(!data.secure_url) throw new Error(data.error?.message || 'Upload failed');
-  return data.secure_url;
-}
 let allShops = [];
-// SECURE AUTH CHECK - No email exposed in code! Only Firebase Auth
-onAuthStateChanged(auth, async (user)=>{
-  if(!user){
-    document.getElementById('loginBox').style.display='block';
-    document.getElementById('adminBox').style.display='none';
+let allProducts = [];
+let activeCategory = 'All';
+async function loadData(){
+  document.getElementById('status').textContent='Loading Jaora Bazaar...';
+  // Load approved shops only
+  const q = query(collection(db,"shops"), where("approved","==",true));
+  const snap = await getDocs(q);
+  allShops = snap.docs.map(d=>({id:d.id,...d.data()}));
+  
+  // Sort: Popular + Banner + Premium first, then by views
+  allShops.sort((a,b)=>{
+    const scoreA = (a.isBannerAd?1000:0)+(a.isPopular?500:0)+(a.isPremium?200:0)+(a.views||0);
+    const scoreB = (b.isBannerAd?1000:0)+(b.isPopular?500:0)+(b.isPremium?200:0)+(b.views||0);
+    return scoreB - scoreA;
+  });
+  
+  // Load all products for approved shops
+  const psnap = await getDocs(collection(db,"products"));
+  allProducts = psnap.docs.map(d=>({id:d.id,...d.data()})).filter(p=> allShops.some(s=>s.id===p.shopId));
+  
+  document.getElementById('status').textContent = `Jaora • ${allShops.length} shops • ${allProducts.length} products`;
+  renderShops();
+}
+function renderShops(){
+  const container = document.getElementById('shops');
+  const search = document.getElementById('searchInput').value.toLowerCase();
+  container.innerHTML='';
+  
+  let filtered = allShops.filter(s=>{
+    const matchSearch = !search || (s.name||'').toLowerCase().includes(search) || (s.category||'').toLowerCase().includes(search) || (s.area||'').toLowerCase().includes(search);
+    const matchCat = activeCategory==='All' || (s.category||'General')===activeCategory;
+    return matchSearch && matchCat;
+  });
+  
+  if(filtered.length===0){
+    container.innerHTML='<p style="text-align:center;color:#6B7280;padding:20px;">No shops found. Try different search.</p>';
     return;
   }
-  // Secure: Check if user is admin via Firestore collection 'admins' (doc ID = uid)
-  // No email hardcoded! Admin list safe in Firestore, not in frontend code
-  try{
-    const adminDoc = await getDoc(doc(db,"admins",user.uid));
-    const adminEmailDoc = await getDoc(doc(db,"admins",user.email.toLowerCase()));
-    if(!adminDoc.exists() && !adminEmailDoc.exists()){
-      // First user to login becomes admin automatically if admins collection empty
-      const adminsSnap = await getDocs(collection(db,"admins"));
-      if(adminsSnap.empty){
-        // First admin - auto create
-        await setDoc(doc(db,"admins",user.uid), {email:user.email, role:'super-admin', createdAt: serverTimestamp()});
-        console.log('First admin created:', user.email);
-      } else {
-        // Not admin - deny
-        document.getElementById('loginBox').innerHTML = `<div class=card><h3>Access Denied</h3><p>Only authorized admins allowed.<br>Your ID: ${user.uid}<br>Ask owner to add you to admins collection in Firestore.</p><button class=btn onclick="doLogout()">Logout</button></div>`;
-        document.getElementById('loginBox').style.display='block';
-        document.getElementById('adminBox').style.display='none';
-        return;
-      }
-    }
-  }catch(e){
-    console.log('Admin check error (if first time, ignore):', e);
-    // If error, allow - because admins collection may not exist yet - first user becomes admin
-  }
   
-  document.getElementById('loginBox').style.display='none';
-  document.getElementById('adminBox').style.display='block';
-  document.getElementById('adminEmailShow').textContent = user.email;
-  loadShops();
-});
-window.doLogin = async()=>{
-  const e=document.getElementById('loginEmail').value.trim();
-  const p=document.getElementById('loginPass').value;
-  if(!e||!p) return alert('Enter email password');
-  try{ await signInWithEmailAndPassword(auth,e,p); }catch(err){ alert('Login failed: '+err.message); }
-}
-window.doLogout = async()=>{ await signOut(auth); location.reload(); }
-async function loadShops(){
-  const status = document.getElementById('loadStatus');
-  status.textContent='Loading shops...';
-  const snap = await getDocs(collection(db,"shops"));
-  allShops = snap.docs.map(d=>({id:d.id,...d.data()}));
-  // Sort: pending first, then premium, then name
-  allShops.sort((a,b)=>{
-    if(a.approved!==b.approved) return a.approved ? 1 : -1;
-    if((b.isPremium?1:0)!==(a.isPremium?1:0)) return (b.isPremium?1:0)-(a.isPremium?1:0);
-    return (a.name||'').localeCompare(b.name||'');
-  });
-  status.textContent = `Total: ${allShops.length} | Pending: ${allShops.filter(s=>!s.approved).length} | Premium: ${allShops.filter(s=>s.isPremium).length} | Views: ${allShops.reduce((a,b)=>a+(b.views||0),0)}`;
-  renderShops();
-  document.getElementById('totalShops').textContent = allShops.length;
-  document.getElementById('pendingShops').textContent = allShops.filter(s=>!s.approved).length;
-  document.getElementById('premiumShops').textContent = allShops.filter(s=>s.isPremium).length;
-  document.getElementById('totalViews').textContent = allShops.reduce((a,b)=>a+(b.views||0),0);
-  document.getElementById('totalCalls').textContent = allShops.reduce((a,b)=>a+(b.callClicks||0),0);
-  document.getElementById('totalMaps').textContent = allShops.reduce((a,b)=>a+(b.mapClicks||0),0);
-  document.getElementById('totalBooks').textContent = allShops.reduce((a,b)=>a+(b.bookClicks||0),0);
-  document.getElementById('totalInsta').textContent = allShops.reduce((a,b)=>a+(b.instaClicks||0),0);
-}
-function renderShops(filter=''){
-  const q = filter.toLowerCase();
-  const list = allShops.filter(s=>{
-    if(!q) return true;
-    return (s.name||'').toLowerCase().includes(q) || (s.ownerEmail||'').toLowerCase().includes(q) || (s.phone||'').includes(q);
-  });
-  const div = document.getElementById('shopsList');
-  div.innerHTML='';
-  list.forEach(shop=>{
+  filtered.forEach(shop=>{
+    const shopProducts = allProducts.filter(p=>p.shopId===shop.id).slice(0,4);
+    const banner = shop.bannerImage;
+    const hasBanner = banner && banner.startsWith('http');
+    
     const el = document.createElement('div');
-    el.className='shop-row';
-    const banner = shop.bannerImage || 'https://via.placeholder.com/90x90?text=No+Image';
-    const approvedBadge = shop.approved ? `<span class="badge badge-approved">APPROVED</span>` : `<span class="badge badge-pending">PENDING APPROVAL</span>`;
-    const premiumBadge = shop.isPremium ? `<span class="badge badge-premium">PREMIUM Rs${shop.premiumPrice||500}</span>` : `<span class="badge" style="background:#F3F4F6;color:#6B7280;">FREE</span>`;
-    const popularBadge = shop.isPopular ? `<span class="badge badge-popular">POPULAR Rs1500</span>` : '';
-    const bannerBadge = shop.isBannerAd ? `<span class="badge badge-banner">BANNER Rs2000</span>` : '';
+    el.className='shop-card';
     el.innerHTML = `
-      <img src="${banner}" onerror="this.src='https://via.placeholder.com/90x90?text=No+Img'"/>
-      <div style="flex:1;min-width:0;">
-        <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;">
-          <b style="font-size:15px;">${shop.name||'No name'}</b> ${approvedBadge} ${premiumBadge} ${popularBadge} ${bannerBadge}
-        </div>
-        <div class="small" style="margin:4px 0;">Owner: ${shop.ownerEmail||'-'} | Phone: ${shop.phone||'-'} | ${shop.category||'-'} | ${shop.area||shop.address||''}</div>
-        <div class="stat" style="margin:4px 0;">👁 ${shop.views||0} views | 📞 ${shop.callClicks||0} calls | 📍 ${shop.mapClicks||0} maps | 📦 <span id="prod-${shop.id}">loading...</span> products</div>
-        <div style="margin:8px 0;display:flex;gap:6px;flex-wrap:wrap;">
-          ${!shop.approved ? `<button class="btn btn-sm btn-approve" onclick="approveShop('${shop.id}')">✅ APPROVE</button>` : `<button class="btn btn-sm" style="background:#E5E7EB;color:#374151;" onclick="unapproveShop('${shop.id}')">⏸ UNAPPROVE</button>`}
-          <button class="btn btn-sm btn-dark" onclick="openEdit('${shop.id}')">✏️ Edit / Image / Price</button>
-          <button class="btn btn-sm btn-reject" onclick="deleteShop('${shop.id}')">🗑 Delete</button>
-        </div>
-        <div id="edit-${shop.id}" style="display:none;margin-top:10px;padding:12px;background:#FFFBF5;border-radius:12px;border:1px solid var(--border);">
-          <b>✏️ Edit Shop - Premium Price + Image Upload (Cloudinary tizekip0)</b>
-          <div class="grid">
-            <input class="input" id="edit-name-${shop.id}" value="${(shop.name||'').replace(/"/g,'&quot;')}" placeholder="Shop name"/>
-            <input class="input" id="edit-phone-${shop.id}" value="${shop.phone||''}" placeholder="Mobile"/>
+      ${hasBanner ? `<img class="shop-banner" src="${banner}" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'"/><div class="no-img" style="display:none;">🏪</div>` : `<div class="no-img">🏪</div>`}
+      <div class="shop-body">
+        <div class="shop-top">
+          <div>
+            <h3 class="shop-name">${shop.name||'Shop'}</h3>
+            <div class="shop-meta">
+              <span>📍 ${shop.area||shop.address||'Jaora'}</span>
+              <span>🏷️ ${shop.category||'General'}</span>
+              ${shop.isVerified ? `<span class="badge badge-verified">✓ Verified</span>` : ''}
+              ${shop.isPremium ? `<span class="badge badge-premium">Premium</span>` : ''}
+              ${shop.isPopular ? `<span class="badge badge-popular">★ Popular</span>` : ''}
+            </div>
           </div>
-          <input class="input" id="edit-email-${shop.id}" value="${shop.ownerEmail||''}" placeholder="Owner Email"/>
-          <div class="grid">
-            <input class="input" id="edit-price-${shop.id}" type="number" value="${shop.premiumPrice||500}" placeholder="Premium price Rs (e.g. 300,500,800,1000)"/>
-            <input class="input" id="edit-bannerfile-${shop.id}" type="file" accept="image/*"/>
-          </div>
-          <div style="display:flex;gap:10px;flex-wrap:wrap;margin:6px 0;">
-            <label class="toggle"><input type="checkbox" id="edit-premium-${shop.id}" ${shop.isPremium?'checked':''}/> Premium</label>
-            <label class="toggle"><input type="checkbox" id="edit-popular-${shop.id}" ${shop.isPopular?'checked':''}/> Popular Rs1500</label>
-            <label class="toggle"><input type="checkbox" id="edit-bannerad-${shop.id}" ${shop.isBannerAd?'checked':''}/> Banner Ad Rs2000</label>
-            <label class="toggle"><input type="checkbox" id="edit-verified-${shop.id}" ${shop.isVerified?'checked':''}/> Verified Badge</label>
-            <label class="toggle"><input type="checkbox" id="edit-approved-${shop.id}" ${shop.approved?'checked':''}/> Approved (Show to customers)</label>
-          </div>
-          <div class="preview" id="edit-preview-${shop.id}"><img id="edit-img-${shop.id}"/></div>
-          <button class="btn btn-sm" onclick="saveEdit('${shop.id}')">💾 Save + Upload Image to Cloudinary</button>
-          <span id="edit-status-${shop.id}" class="small" style="margin-left:8px;"></span>
         </div>
+        <div class="btn-row">
+          <button class="btn-call" onclick="trackCall('${shop.id}','${shop.phone||''}')">📞 Call</button>
+          ${shop.isPremium ? `<button class="btn-wa" onclick="trackBook('${shop.id}','${shop.phone||''}')">💬 WhatsApp</button><button class="btn-map" onclick="trackMap('${shop.id}')">📍 Map</button>` : `<button class="btn-map" style="flex:1;" onclick="alert('Map available for Premium shops')">📍 Map (Premium)</button>`}
+        </div>
+        ${shopProducts.length>0 ? `<div class="products">${shopProducts.map(p=>`
+          <div class="product-card">
+            ${p.image ? `<img src="${p.image}" loading="lazy" onerror="this.src='https://via.placeholder.com/150?text=No+Image'"/>` : `<div style="height:110px;background:#FFF0E6;display:flex;align-items:center;justify-content:center;">📦</div>`}
+            <div class="product-body"><div class="product-name">${p.name||'Product'}</div><div class="product-price">${p.price?`Rs ${p.price}`:''}</div></div>
+          </div>
+        `).join('')}</div>` : `<p style="font-size:12px;color:#6B7280;margin-top:10px;">No products yet</p>`}
       </div>
     `;
-    div.appendChild(el);
-    // product count async
-    getDocs(query(collection(db,"products"), where("shopId","==",shop.id))).then(ps=>{ const c=document.getElementById(`prod-${shop.id}`); if(c) c.textContent=ps.size; });
-    // preview listener
-    setTimeout(()=>{
-      const fileInput = document.getElementById(`edit-bannerfile-${shop.id}`);
-      if(fileInput){ fileInput.addEventListener('change', e=>{
-        const f=e.target.files[0]; if(f){ const img=document.getElementById(`edit-img-${shop.id}`); const prev=document.getElementById(`edit-preview-${shop.id}`); img.src=URL.createObjectURL(f); prev.style.display='block'; }
-      }); }
-    },100);
+    container.appendChild(el);
   });
 }
-window.approveShop = async(id)=>{
-  if(!confirm('Approve this shop? It will show to all customers on main page')) return;
-  await updateDoc(doc(db,"shops",id), {approved:true, approvedAt: serverTimestamp()});
-  const s=allShops.find(x=>x.id===id); if(s) s.approved=true;
-  renderShops(document.getElementById('searchBox').value);
-  alert('✅ Shop APPROVED - Now live on main page!');
+window.trackCall = async(shopId, phone)=>{
+  try{ await updateDoc(doc(db,"shops",shopId), {callClicks: increment(1)}); }catch(e){}
+  if(phone) window.open(`tel:${phone}`,'_blank');
 }
-window.unapproveShop = async(id)=>{
-  if(!confirm('Unapprove? Shop will hide from customers')) return;
-  await updateDoc(doc(db,"shops",id), {approved:false});
-  const s=allShops.find(x=>x.id===id); if(s) s.approved=false;
-  renderShops(document.getElementById('searchBox').value);
-}
-window.openEdit = (id)=>{
-  const el=document.getElementById(`edit-${id}`);
-  el.style.display = el.style.display==='none' ? 'block' : 'none';
-}
-window.saveEdit = async(id)=>{
-  const statusEl=document.getElementById(`edit-status-${id}`);
-  try{
-    statusEl.textContent='Saving...';
-    const name=document.getElementById(`edit-name-${id}`).value.trim();
-    const phone=document.getElementById(`edit-phone-${id}`).value.trim();
-    const email=document.getElementById(`edit-email-${id}`).value.trim();
-    const premiumPrice=parseInt(document.getElementById(`edit-price-${id}`).value)||500;
-    const isPremium=document.getElementById(`edit-premium-${id}`).checked;
-    const isPopular=document.getElementById(`edit-popular-${id}`).checked;
-    const isBannerAd=document.getElementById(`edit-bannerad-${id}`).checked;
-    const isVerified=document.getElementById(`edit-verified-${id}`).checked;
-    const approved=document.getElementById(`edit-approved-${id}`).checked;
-    const file=document.getElementById(`edit-bannerfile-${id}`).files[0];
-    
-    let bannerUrl = allShops.find(x=>x.id===id)?.bannerImage || '';
-    if(file){
-      statusEl.textContent='☁️ Uploading to Cloudinary tizekip0...';
-      bannerUrl = await uploadToCloudinary(file, `desi-bazaar/shops/${id}/banner`);
-    }
-    const updateData = {
-      name, phone, ownerEmail: email,
-      premiumPrice,
-      isPremium,
-      isPopular,
-      isBannerAd,
-      isVerified,
-      approved,
-      updatedAt: serverTimestamp()
-    };
-    if(bannerUrl) updateData.bannerImage = bannerUrl;
-    // Auto set subscription status
-    if(isPremium) { updateData.subscriptionStatus='active'; } else { updateData.subscriptionStatus='free'; }
-    
-    await updateDoc(doc(db,"shops",id), updateData);
-    // Update local
-    const idx=allShops.findIndex(x=>x.id===id);
-    if(idx>=0) Object.assign(allShops[idx], updateData);
-    statusEl.textContent='✅ Saved!';
-    statusEl.style.color='green';
-    setTimeout(()=>{ renderShops(document.getElementById('searchBox').value); },800);
-  }catch(e){ statusEl.textContent='❌ '+e.message; statusEl.style.color='red'; console.error(e); }
-}
-window.deleteShop = async(id)=>{
-  if(!confirm('DELETE shop permanently? This cannot be undone!')) return;
-  if(!confirm('Are you SURE? Type DELETE in next prompt')) return;
-  const confirmText = prompt('Type DELETE to confirm');
-  if(confirmText!=='DELETE') return alert('Cancelled');
-  await deleteDoc(doc(db,"shops",id));
-  allShops = allShops.filter(s=>s.id!==id);
-  renderShops(document.getElementById('searchBox').value);
-  alert('Deleted');
-}
-// Create new shop
-window.createShop = async()=>{
-  const name=document.getElementById('newName').value.trim();
-  const ownerEmail=document.getElementById('newOwnerEmail').value.trim().toLowerCase();
-  const ownerPass=document.getElementById('newOwnerPass').value;
-  const phone=document.getElementById('newPhone').value.trim();
-  const category=document.getElementById('newCategory').value.trim();
-  const area=document.getElementById('newArea').value.trim();
-  const address=document.getElementById('newAddress').value.trim();
-  const price=parseInt(document.getElementById('newPrice').value)||500;
-  const isPremium=document.getElementById('newPremium').checked;
-  const file=document.getElementById('newBannerFile').files[0];
-  
-  if(!name||!ownerEmail||!ownerPass||!phone) return alert('Fill Name, Owner Email, Password, Mobile - Required!');
-  if(ownerPass.length<6) return alert('Password must be 6+ characters');
-  
-  const statusEl=document.getElementById('createStatus');
-  statusEl.textContent='Checking unique...';
-  statusEl.style.color='#FF6B2C';
-  try{
-    // UNIQUE CHECKS
-    const emailQuery = query(collection(db,"shops"), where("ownerEmail","==",ownerEmail));
-    const emailSnap = await getDocs(emailQuery);
-    if(!emailSnap.empty) throw new Error('Owner Email already exists! Use different email.');
-    
-    const phoneQuery = query(collection(db,"shops"), where("phone","==",phone));
-    const phoneSnap = await getDocs(phoneQuery);
-    if(!phoneSnap.empty) throw new Error('Mobile number already exists! Use different mobile.');
-    
-    statusEl.textContent='Creating owner account...';
-    // Create auth user via secondary app to not logout admin
-    const secondaryApp = initializeApp(firebaseConfig, "secondary-"+Date.now());
-    const secondaryAuth = getAuth(secondaryApp);
-    let ownerUid = '';
-    try{
-      const cred = await createUserWithEmailAndPassword(secondaryAuth, ownerEmail, ownerPass);
-      ownerUid = cred.user.uid;
-      await signOut(secondaryAuth);
-    }catch(e){
-      if(e.code==='auth/email-already-in-use'){
-        // Email already in Firebase Auth - ok, allow shop creation with existing auth
-        console.log('Auth already exists, continue');
-      } else {
-        throw e;
-      }
-    }
-    try{ await deleteApp(secondaryApp); }catch(e){}
-    
-    let bannerUrl='';
-    if(file){
-      statusEl.textContent='☁️ Uploading banner to Cloudinary tizekip0...';
-      // Need temp id for folder
-      bannerUrl = await uploadToCloudinary(file, `desi-bazaar/shops/temp-banner`);
-    }
-    
-    statusEl.textContent='Creating shop...';
-    const shopData = {
-      name,
-      ownerEmail,
-      ownerUid: ownerUid||'',
-      phone,
-      category: category||'General',
-      area: area||'Jaora',
-      address: address||area||'Jaora',
-      bannerImage: bannerUrl||'',
-      premiumPrice: price,
-      isPremium: isPremium,
-      isPopular: false,
-      isBannerAd: false,
-      isVerified: isPremium,
-      approved: false, // Needs APPROVE click after creation
-      subscriptionStatus: isPremium ? 'active' : 'free',
-      views: 0,
-      callClicks: 0,
-      mapClicks: 0,
-      createdAt: serverTimestamp(),
-      createdBy: auth.currentUser?.email||'admin'
-    };
-    const docRef = await addDoc(collection(db,"shops"), shopData);
-    
-    // If banner uploaded to temp, re-upload to correct folder? Keep as is for simplicity - URL valid
-    
-    statusEl.textContent=`✅ Shop created! ID: ${docRef.id}. Now click APPROVE to make it live!`;
-    statusEl.style.color='green';
-    
-    // Reset form
-    document.getElementById('newName').value='';
-    document.getElementById('newOwnerEmail').value='';
-    document.getElementById('newOwnerPass').value='';
-    document.getElementById('newPhone').value='';
-    document.getElementById('newBannerFile').value='';
-    document.getElementById('newPreview').style.display='none';
-    
-    loadShops();
-  }catch(e){
-    statusEl.textContent='❌ '+e.message;
-    statusEl.style.color='red';
-    console.error(e);
+window.trackMap = async(shopId)=>{
+  try{ await updateDoc(doc(db,"shops",shopId), {mapClicks: increment(1)}); }catch(e){}
+  const shop = allShops.find(s=>s.id===shopId);
+  if(shop?.address || shop?.area){
+    window.open(`https://maps.google.com/?q=${encodeURIComponent(shop.address||shop.area+', Jaora')}`,'_blank');
   }
 }
-window.filterShops = ()=>{ renderShops(document.getElementById('searchBox').value); }
+window.trackBook = async(shopId, phone)=>{
+  try{ await updateDoc(doc(db,"shops",shopId), {bookClicks: increment(1)}); }catch(e){}
+  if(phone) window.open(`https://wa.me/91${phone.replace(/[^0-9]/g,'').slice(-10)}?text=Hi, I saw your shop on Desi Bazaar`,'_blank');
+}
+// Auto view increment
+async function addView(shopId){
+  try{ await updateDoc(doc(db,"shops",shopId), {views: increment(1)}); }catch(e){}
+}
+window.filterCategory = (cat, btn)=>{
+  activeCategory=cat;
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderShops();
+}
+window.searchShops = ()=> renderShops();
+loadData();
+// Track views when card visible (lazy)
+const observer = new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      const shopId = e.target.dataset.shopId;
+      if(shopId) addView(shopId);
+      observer.unobserve(e.target);
+    }
+  });
+}, {threshold:0.5});
 </script>
 </head>
 <body>
-<div class="top">
-  <div><b style="font-family:Fraunces;font-size:20px;">🔐 Secret Admin - Desi Bazaar</b><br><span class="small" style="color:#BBB;">Jagruk Control Panel • Cloudinary: tizekip0 • apnabazaar</span></div>
-  <div><span id="adminEmailShow" class="small" style="color:#FFF;"></span> <button class="btn btn-sm" onclick="doLogout()" style="background:#333;margin-left:8px;">Logout</button></div>
+<div class="header">
+  <div class="brand"><img src="./favicon.io/android-chrome-512x512.png" onerror="this.style.display='none'"/> देसी बाजार <span style="font-weight:400;font-size:12px;color:#6B7280;">Jaora</span></div>
+  <div style="font-size:12px;color:#6B7280;">Apna Local Bazaar</div>
 </div>
-<div id="loginBox" class="card" style="max-width:400px;margin:60px auto;display:none;">
-  <h2>🔐 Admin Login</h2>
-  <p class="small">Only Jagruk admin emails allowed</p>
-  <input id="loginEmail" class="input" placeholder="Admin email (jagruk.aadmi@gmail.com)"/>
-  <input id="loginPass" class="input" type="password" placeholder="Password"/>
-  <button class="btn" style="width:100%;margin-top:10px;" onclick="doLogin()">Login to Secret Admin</button>
-  <p class="small" style="margin-top:10px;">Your secret URL: /jagruk-473287-control/ - Keep private!</p>
+<div class="hero">
+  <h1>Jaora Bazaar 🛍️</h1>
+  <p style="margin:8px 0 0 0;opacity:.9;">Jaora, Raghogarh, Rajgarh ka apna local bazaar</p>
+  <div style="margin-top:14px;max-width:500px;margin-left:auto;margin-right:auto;">
+    <input id="searchInput" class="search" placeholder="Search shop, product, area..." oninput="searchShops()"/>
+  </div>
+  <p id="status" style="font-size:12px;opacity:.8;margin-top:8px;">Loading...</p>
 </div>
-<div id="adminBox" style="display:none;">
-  <div class="grid">
-    <div class="card" style="background:linear-gradient(135deg,#FF6B2C,#FF8A50);color:white;border:0;">
-      <h3 style="margin:0;">📊 Dashboard - Views & Analytics (Admin Only - Private)</h3>
-      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:12px;">
-        <div style="background:rgba(255,255,255,.15);padding:10px;border-radius:10px;"><b id="totalShops" style="font-size:22px;">0</b><br><span style="font-size:11px;opacity:.9;">Total Shops</span></div>
-        <div style="background:rgba(255,255,255,.15);padding:10px;border-radius:10px;"><b id="pendingShops" style="font-size:22px;">0</b><br><span style="font-size:11px;opacity:.9;">Pending Approve</span></div>
-        <div style="background:rgba(255,255,255,.15);padding:10px;border-radius:10px;"><b id="premiumShops" style="font-size:22px;">0</b><br><span style="font-size:11px;opacity:.9;">Premium</span></div>
-        <div style="background:rgba(0,0,0,.25);padding:10px;border-radius:10px;"><b id="totalViews" style="font-size:22px;">0</b><br><span style="font-size:11px;opacity:.9;">👁 Total Views</span></div>
-        <div style="background:rgba(255,255,255,.15);padding:10px;border-radius:10px;"><b id="totalCalls" style="font-size:22px;">0</b><br><span style="font-size:11px;opacity:.9;">📞 Total Calls</span></div>
-        <div style="background:rgba(255,255,255,.15);padding:10px;border-radius:10px;"><b id="totalMaps" style="font-size:22px;">0</b><br><span style="font-size:11px;opacity:.9;">📍 Map Clicks</span></div>
-        <div style="background:rgba(255,255,255,.15);padding:10px;border-radius:10px;"><b id="totalBooks" style="font-size:22px;">0</b><br><span style="font-size:11px;opacity:.9;">💬 Book Clicks</span></div>
-        <div style="background:rgba(255,255,255,.15);padding:10px;border-radius:10px;"><b id="totalInsta" style="font-size:22px;">0</b><br><span style="font-size:11px;opacity:.9;">📸 Insta Clicks</span></div>
-      </div>
-      <p style="font-size:11px;opacity:.8;margin-top:8px;">This analytics is PRIVATE - Only you see counts. Customers see 0. Premium shop owners see their own counts only if premium.</p>
-    </div>
-    <div class="card">
-      <h3 style="margin:0 0 8px 0;">🔍 Search Shops</h3>
-      <input id="searchBox" class="input" placeholder="Search by name, email, mobile..." oninput="filterShops()"/>
-      <p id="loadStatus" class="small"></p>
-    </div>
-  </div>
-  <div class="card" style="border:2px solid #FF6B2C;">
-    <h3>➕ Create New Shop Owner (with Mobile + Email UNIQUE check + Cloudinary Image)</h3>
-    <div class="grid">
-      <input id="newName" class="input" placeholder="Shop Name * e.g. Jaora Saree Center"/>
-      <input id="newOwnerEmail" class="input" placeholder="Owner Email * (Login email)"/>
-    </div>
-    <div class="grid">
-      <input id="newOwnerPass" class="input" type="password" placeholder="Owner Password * (min 6 chars)"/>
-      <input id="newPhone" class="input" placeholder="Mobile * UNIQUE - 10 digit"/>
-    </div>
-    <div class="grid">
-      <input id="newCategory" class="input" placeholder="Category e.g. Clothing, Electronics"/>
-      <input id="newArea" class="input" placeholder="Area e.g. Azad Chowk, Jaora"/>
-    </div>
-    <input id="newAddress" class="input" placeholder="Full Address"/>
-    <div class="grid">
-      <input id="newPrice" class="input" type="number" value="500" placeholder="Custom Premium Price Rs (300/500/800/1000)"/>
-      <input id="newBannerFile" class="input" type="file" accept="image/*"/>
-    </div>
-    <div style="margin:6px 0;">
-      <label class="toggle"><input type="checkbox" id="newPremium"/> Make Premium (Rs custom price)</label>
-      <label class="toggle"><input type="checkbox" checked/> Needs APPROVE after creation</label>
-    </div>
-    <div class="preview" id="newPreview"><img id="newImg"/></div>
-    <button class="btn" onclick="createShop()" style="width:100%;margin-top:10px;">➕ Create Shop + Owner Account + Upload to Cloudinary (tizekip0)</button>
-    <p id="createStatus" class="small" style="margin-top:8px;"></p>
-    <p class="small" style="margin-top:8px;background:#FFF0E6;padding:8px;border-radius:8px;">✅ Checks: Email UNIQUE, Mobile UNIQUE, Owner Firebase Auth account auto-created, Banner → Cloudinary tizekip0/desi-bazaar/shops/, Shop NOT approved by default - Click APPROVE to show on main page.</p>
-  </div>
-  <div class="card">
-    <h3>🏪 All Shops - Click APPROVE to Make Live | Edit for Image + Premium Price</h3>
-    <div id="shopsList"></div>
-  </div>
-  <div class="card">
-    <h3>📜 How to Use This Secret Admin</h3>
-    <p class="small"><b>1. Create Shop:</b> Fill name, owner email (will be login), password (min 6), mobile (UNIQUE), category, banner photo → Create</p>
-    <p class="small"><b>2. Approve:</b> New shops show PENDING - Click green APPROVE button → Shop appears on https://temporary-coderr.github.io/apnabazaar/</p>
-    <p class="small"><b>3. Edit Image & Price:</b> Click Edit → Change premium price Rs 300/500/800/1000, Toggle Premium/Popular/Banner/Verified, Upload new banner → Cloudinary tizekip0 → Save</p>
-    <p class="small"><b>4. Cloudinary:</b> All images go to https://console.cloudinary.com/ → Media Library → desi-bazaar/shops/ - Free 25 credits</p>
-    <p class="small"><b>5. Security:</b> Mobile + Email UNIQUE checked - Duplicate not allowed. Only you can set premiumPrice, isPremium, isPopular, isBannerAd via this panel.</p>
-  </div>
+<div class="filters">
+  <button class="filter-btn active" onclick="filterCategory('All',this)">All</button>
+  <button class="filter-btn" onclick="filterCategory('Clothing',this)">Clothing</button>
+  <button class="filter-btn" onclick="filterCategory('Electronics',this)">Electronics</button>
+  <button class="filter-btn" onclick="filterCategory('Grocery',this)">Grocery</button>
+  <button class="filter-btn" onclick="filterCategory('Decor',this)">Decor</button>
+  <button class="filter-btn" onclick="filterCategory('Footwear',this)">Footwear</button>
+  <button class="filter-btn" onclick="filterCategory('General',this)">General</button>
 </div>
-<script>
-document.getElementById('newBannerFile')?.addEventListener('change', e=>{
-  const f=e.target.files[0]; if(f){ const img=document.getElementById('newImg'); const prev=document.getElementById('newPreview'); img.src=URL.createObjectURL(f); prev.style.display='block'; }
-});
-</script>
+<div class="container"><div id="shops"></div></div>
 </body></html>
