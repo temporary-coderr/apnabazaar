@@ -1,168 +1,196 @@
 <!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Jaora Bazaar - Apna Local Bazaar</title>
-  <head>
-<!-- Favicon - Desi Bazaar Unique Logo - Files in favicon.io/ folder -->
-<link rel="icon" type="image/x-icon" href="./favicon.io/favicon.ico"/>
-<link rel="icon" type="image/png" sizes="16x16" href="./favicon.io/favicon-16x16.png"/>
-<link rel="icon" type="image/png" sizes="32x32" href="./favicon.io/favicon-32x32.png"/>
-<link rel="apple-touch-icon" href="./favicon.io/android-chrome-192x192.png"/>
-<link rel="icon" type="image/png" sizes="192x192" href="./favicon.io/android-chrome-192x192.png"/>
-<link rel="icon" type="image/png" sizes="512x512" href="./favicon.io/android-chrome-512x512.png"/>
-
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans...
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap" rel="stylesheet">
+<html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Lokmart - Apna Local Bazaar | Jaora, Raghogarh, Rajgarh</title>
+<meta name="description" content="Jaora, Raghogarh, Rajgarh ka apna local bazaar - discover local shops, banners and products with Lokmart.">
+<meta name="keywords" content="Jaora bazaar, Raghogarh shops, Rajgarh local market, Lokmart, Desi Bazaar, Apna Bazaar">
+<meta name="robots" content="index,follow">
+<link rel="canonical" href="https://lokmart.in/">
+<meta property="og:title" content="Lokmart - Apna Local Bazaar">
+<meta property="og:description" content="Jaora, Raghogarh, Rajgarh ka apna local bazaar.">
+<meta property="og:url" content="https://lokmart.in/">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#FF6B2C">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Organization","name":"Lokmart","url":"https://lokmart.in/","description":"Jaora, Raghogarh and Rajgarh local bazaar"}
+</script>
+<link rel="manifest" href="./manifest.json">
+<link rel="icon" href="./favicon.svg" type="image/svg+xml">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@700;800&family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#FFFBF5;--card:#FFFFFF;--ink:#1A1A1A;--muted:#6B7280;--line:#F3E8D3;--orange:#FF6B2C;--orange-light:#FFF0E6;--radius:20px;--shadow:0 8px 32px rgba(0,0,0,0.06)}
-*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--ink)}
-.wrap{max-width:1200px;margin:0 auto;padding:0 20px}.top{position:sticky;top:0;z-index:50;background:rgba(255,251,245,0.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
-.top-inner{display:flex;justify-content:space-between;align-items:center;height:72px}
-.brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:22px}.brand-icon{width:40px;height:40px;background:var(--orange);border-radius:12px;display:grid;place-items:center;color:#fff}
-.btn{padding:10px 18px;border-radius:999px;font-weight:600;font-size:14px;text-decoration:none;border:1px solid var(--line);background:var(--card);color:var(--ink)}.btn-primary{background:var(--ink);color:#fff;border-color:var(--ink)}
-.hero{padding:32px 0 20px;display:grid;grid-template-columns:1.1fr 0.9fr;gap:24px}
-.hero h1{font-family:'Fraunces',serif;font-size:clamp(30px,5vw,50px);line-height:0.95}.hero h1 em{color:var(--orange);font-style:normal}
-.filters{position:sticky;top:72px;z-index:40;background:rgba(255,251,245,0.95);backdrop-filter:blur(16px);padding:12px 0;border-bottom:1px solid var(--line);margin-bottom:18px}
-.search{flex:1;min-width:240px;position:relative}.search input{width:100%;padding:11px 18px 11px 38px;border-radius:999px;border:1px solid var(--line);background:var(--card)}
-.chip{padding:8px 14px;border-radius:999px;border:1px solid var(--line);background:var(--card);font-weight:600;font-size:13px;cursor:pointer}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px}
-.card{background:var(--card);border-radius:20px;padding:16px;border:1px solid var(--line);box-shadow:var(--shadow)}
-.badge{font-size:11px;font-weight:700;padding:4px 10px;border-radius:999px;text-transform:uppercase}
-.badge-cat{background:var(--orange-light);color:var(--orange)}.badge-open{background:#ECFDF5;color:#0E9F6E}
-.title{font-weight:700;font-size:16px;margin:8px 0 2px}.meta{font-size:13px;color:var(--muted)}
-.actions{display:flex;gap:8px;margin-top:10px}.act{flex:1;padding:9px;border-radius:11px;font-weight:600;font-size:13px;text-align:center;border:1px solid var(--line);background:var(--card);text-decoration:none;color:var(--ink)}.act-primary{background:var(--ink);color:#fff;border-color:var(--ink)}
+:root{--orange:#FF6B2C;--bg:#FFFBF5;--border:#F3E8D3;--ink:#1A1A1A;--muted:#6B7280;--cream:#FFF0E6}
+*{box-sizing:border-box}body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);margin:0;color:var(--ink)}
+h1{font-family:'Fraunces',serif}
+.header{background:white;border-bottom:1px solid var(--border);padding:12px 16px;position:sticky;top:0;z-index:50;display:flex;justify-content:space-between;align-items:center}
+.brand{display:flex;align-items:center;gap:8px}.brand img{width:36px;height:36px}
+.hero{background:linear-gradient(135deg,#FF6B2C,#FF8A50);color:white;padding:20px 16px;text-align:center}
+.filters{background:white;padding:10px 16px;border-bottom:1px solid var(--border);position:sticky;top:57px;z-index:40;display:flex;gap:8px;overflow-x:auto}
+.filter-btn{padding:8px 14px;border-radius:20px;border:1px solid var(--border);background:white;font-size:12px;font-weight:600;white-space:nowrap;cursor:pointer}
+.filter-btn.active{background:var(--ink);color:white}
+.container{max-width:1100px;margin:0 auto;padding:12px 16px}
+.shops-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+@media(min-width:700px){.shops-grid{grid-template-columns:repeat(3,1fr)}}
+@media(min-width:1000px){.shops-grid{grid-template-columns:repeat(4,1fr)}}
+.shop-card{background:white;border-radius:16px;border:1px solid var(--border);overflow:hidden;cursor:pointer;transition:.2s;box-shadow:0 4px 12px rgba(0,0,0,.05)}
+.shop-card:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(0,0,0,.08)}
+.shop-banner{width:100%;height:140px;object-fit:cover;background:var(--cream);display:block}
+.shop-banner-placeholder{height:140px;background:linear-gradient(135deg,#FFF0E6,#F3E8D3);display:flex;align-items:center;justify-content:center;font-size:36px}
+.shop-body{padding:10px}
+.shop-name{font-weight:800;font-size:14px;margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.shop-meta{font-size:11px;color:var(--muted);margin-top:3px}
+.badge{padding:3px 7px;border-radius:10px;font-size:9px;font-weight:800;display:inline-block;margin-top:4px}
+.badge-premium{background:#FFF0E6;color:#FF6B2C;border:1px solid #FF6B2C}.badge-popular{background:#1A1A1A;color:#FFD700}
+.search{width:100%;max-width:500px;padding:12px 14px;border:1px solid var(--border);border-radius:12px;font-size:14px;outline:none}
+.search-controls{display:flex;justify-content:center;gap:8px;align-items:center}
+.search-controls .search{flex:1}
+.voice-btn,.share-btn{border:0;border-radius:12px;padding:12px;background:#1A1A1A;color:#fff;font-weight:700;cursor:pointer}
 </style>
-</head>
-<body>
-<div class="top"><div class="wrap"><div class="top-inner">
-<div class="brand" style="display:flex;align-items:center;gap:12px;">
-  <img src="./favicon.io/android-chrome-512x512.png" 
-       alt="Desi Bazaar Logo" 
-       style="width:48px;height:48px;border-radius:12px;object-fit:cover;"/>
-  <div>
-    <div style="font-family:'Fraunces',serif;font-weight:700;font-size:20px;">Jaora Bazaar</div>
-    <div style="font-size:11px;color:var(--muted);font-weight:600;letter-spacing:0.5px;">देसी बाजार • अपना लोकल बाज़ार</div>
-  </div>
-</div>
-<div style="display:flex;gap:8px"><a class="btn" href="./shop/">Shop Login</a><a class="btn btn-primary" href="#shops">Explore</a></div>
-</div></div></div>
-<div class="wrap">
-<div class="hero"><div>
-<h1>Apna local bazaar — <em>Jaora, Raghogarh ka apna.</em></h1>
-<p style="color:#6B7280;margin-top:10px">Local dukaan, grocery, kapde, electronics — sab kuch ek jagah.</p>
-<div style="display:flex;gap:20px;margin-top:14px"><div><b id="totalShops">...</b><div style="font-size:11px;color:#6B7280">SHOPS LIVE</div></div><div><b id="debug">Loading...</b><div style="font-size:11px;color:#6B7280">DEBUG</div></div></div>
-</div>
-<div style="background:#fff;border-radius:20px;padding:14px;border:1px solid #F3E8D3;box-shadow:0 8px 32px rgba(0,0,0,0.06)">
-<div style="font-size:11px;color:#6B7280">POPULAR</div>
-<div style="padding:6px 0;font-size:13px">⚡ Sharma Electricals</div><div style="padding:6px 0;font-size:13px">👕 Raghogarh Fashion</div><div style="padding:6px 0;font-size:13px">🥦 Fresh Mart</div>
-</div></div>
-<div class="filters"><div style="display:flex;gap:8px;flex-wrap:wrap">
-<div class="search"><span style="position:absolute;left:12px;top:50%;transform:translateY(-50%)">🔍</span><input id="searchBox" placeholder="Search..."/></div>
-<select id="townFilter" class="chip"><option value="">All Towns</option><option>Jaora</option><option>Raghogarh</option><option>Rajgarh</option></select>
-<select id="catFilter" class="chip"><option value="">All</option><option>Grocery</option><option>Clothing</option><option>Electronics</option><option>Food</option><option>Beauty</option></select>
-</div></div>
-<div id="shops" class="grid"></div>
-<div id="empty" style="display:none;text-align:center;padding:40px;color:#6B7280">
-<div style="font-size:32px">📦</div><h3 id="emptyMsg">No shops</h3><p id="emptyDetail">Checking...</p>
-<pre id="debugLog" style="text-align:left;background:#fff;padding:10px;border-radius:12px;margin-top:12px;font-size:11px;overflow:auto;max-height:200px"></pre>
-</div>
-</div>
 <script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
 const firebaseConfig = {
   apiKey: "AIzaSyBtcdBS75tgYJ5W1wilHT9y4rNI1LzUAHI",
   authDomain: "website-1cb04.firebaseapp.com",
   projectId: "website-1cb04",
   storageBucket: "website-1cb04.firebasestorage.app",
   messagingSenderId: "392147898697",
-  appId: "1:392147898697:web:faa25a34b938ccd739ca98",
-  measurementId: "G-RWF18VNE3E"
+  appId: "1:392147898697:web:faa25a34b938ccd739ca98"
 };
-import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
-import { getFirestore, collection, getDocs, query, where, doc, updateDoc, increment } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-function log(msg){
-  const el = document.getElementById('debugLog');
-  if(el) el.textContent += '\n' + new Date().toLocaleTimeString() + ' - ' + msg;
-  console.log(msg);
-}
-let allShops = [];
-async function load(){
+
+let allShops=[];
+let activeCat='All';
+let deferredInstallPrompt=null;
+
+async function loadShops(){
+  document.getElementById('status').textContent='Loading banners...';
   try{
-    log('Fetching ALL shops from website-1cb04...');
-    const qAll = query(collection(db, 'shops'));
-    const snapAll = await getDocs(qAll);
-    log(`ALL shops: ${snapAll.size} docs`);
-    
-    const qApproved = query(collection(db, 'shops'), where('approved','==',true));
-    const snapApproved = await getDocs(qApproved);
-    log(`APPROVED shops (approved==true): ${snapApproved.size} docs`);
-    
-    // Show ALL for now to debug - Change to approved later
-    allShops = snapAll.docs.map(d => ({id:d.id, ...d.data()}));
-    
-    document.getElementById('totalShops').textContent = allShops.length;
-    document.getElementById('debug').textContent = `All:${snapAll.size} Approved:${snapApproved.size}`;
-    
-    if(snapAll.size>0 && snapApproved.size===0){
-      document.getElementById('emptyMsg').textContent = `${snapAll.size} shops found but 0 approved`;
-      document.getElementById('emptyDetail').textContent = `Go to /jagruk-473287-control/ and click Approve - Now showing ALL for debugging`;
-      // Still show all for debugging
-    }
-    
-    render(allShops);
-    
-    if(snapAll.size===0){
-      document.getElementById('empty').style.display='block';
-      document.getElementById('emptyMsg').textContent='No shops in Firebase';
-      document.getElementById('emptyDetail').textContent='Add shop in /jagruk-473287-control/';
-    }
-    
-  }catch(e){
-    log('ERROR: '+e.code+' '+e.message);
-    document.getElementById('empty').style.display='block';
-    document.getElementById('emptyMsg').textContent='Error: '+e.code;
-    document.getElementById('emptyDetail').textContent=e.message+' - Check Firestore Rules: allow read if true';
+    const q = query(collection(db,"shops"), where("approved","==",true));
+    const snap = await getDocs(q);
+    allShops = snap.docs.map(d=>({id:d.id,...d.data()}));
+    allShops.sort((a,b)=>{
+      const scoreA=(a.isBannerAd?1000:0)+(a.isPopular?500:0)+(a.isPremium?200:0);
+      const scoreB=(b.isBannerAd?1000:0)+(b.isPopular?500:0)+(b.isPremium?200:0);
+      return scoreB-scoreA;
+    });
+    document.getElementById('status').textContent=`${allShops.length} shops • Click banner to view products`;
+    render();
+  }catch(error){
+    document.getElementById('status').textContent='Unable to load shops. Please try again later.';
+    console.error('Shop list load failed:',error);
   }
 }
-function render(list){
-  const grid=document.getElementById('shops');
-  const empty=document.getElementById('empty');
-  if(list.length===0){ grid.innerHTML=''; empty.style.display='block'; return; }
-  empty.style.display='none';
-  grid.innerHTML=list.map(s=>`
-    <div class="card">
-      <div style="display:flex;justify-content:space-between"><span class="badge badge-cat">${s.category||'Shop'}</span><span class="badge badge-open">${s.approved?'✅':'⏳ '+ (s.approved===false?'Pending':'')}</span></div>
-      <div class="title">${s.name||'Shop'}</div>
-      <div class="meta">📍 ${s.area||''} ${s.city||''} · 📱 ${s.phone||''} ${s.ownerEmail? '· ✉️ '+s.ownerEmail.slice(0,3)+'***' : ''}</div>
-      <div class="actions">
-        <a class="act act-primary" href="tel:${s.phone}" onclick="track('${s.id}','callClicks')">📞 Call</a>
-        <a class="act" href="https://wa.me/91${s.phone}" target="_blank" onclick="track('${s.id}','bookClicks')">💬 WhatsApp</a>
-        <a class="act" href="${s.map||'#'}" target="_blank" onclick="track('${s.id}','mapClicks')">📍 Map</a>
-      </div>
-    </div>
-  `).join('');
-}
-window.track=async(id,field)=>{
-  try{ await updateDoc(doc(db,'shops',id),{[field]:increment(1),views:increment(1)}); log(`Tracked ${field} for ${id}`); }catch(e){ log('Track failed: '+e.code); }
-}
-function filter(){
-  const term=(document.getElementById('searchBox').value||'').toLowerCase();
-  const town=document.getElementById('townFilter').value;
-  const cat=document.getElementById('catFilter').value;
-  let f=allShops.filter(s=>{
-    const search=!term||(s.name+s.area+s.city+s.category).toLowerCase().includes(term);
-    const t=!town||s.city===town;
-    const c=!cat||s.category===cat;
-    return search&&t&&c;
+
+function render(){
+  const search=document.getElementById('searchInput').value.toLowerCase();
+  const grid=document.getElementById('shopsGrid');
+  const filtered=allShops.filter(s=>{
+    const mSearch=!search||(s.name||'').toLowerCase().includes(search)||(s.category||'').toLowerCase().includes(search)||(s.area||'').toLowerCase().includes(search);
+    const mCat=activeCat==='All'||(s.category||'General')===activeCat;
+    return mSearch&&mCat;
   });
-  render(f);
+  grid.innerHTML='';
+  if(filtered.length===0){ const empty=document.createElement('p'); empty.style.gridColumn='1/-1'; empty.style.textAlign='center'; empty.style.color='#6B7280'; empty.textContent='No shops found'; grid.appendChild(empty); return; }
+  filtered.forEach(shop=>{
+    const hasBanner=typeof shop.bannerImage==='string' && shop.bannerImage.startsWith('https://res.cloudinary.com/');
+    const el=document.createElement('a');
+    el.className='shop-card';
+    el.href=`./store/?id=${encodeURIComponent(shop.id)}`;
+    el.style.textDecoration='none';
+    el.style.color='inherit';
+    const placeholder=document.createElement('div');
+    placeholder.className='shop-banner-placeholder';
+    placeholder.textContent='🏪';
+    if(hasBanner){
+      const img=document.createElement('img');
+      img.className='shop-banner';
+      img.src=shop.bannerImage;
+      img.alt=`${shop.name||'Shop'} banner`;
+      img.loading='lazy';
+      img.onerror=()=>img.replaceWith(placeholder);
+      el.appendChild(img);
+    }else el.appendChild(placeholder);
+    const body=document.createElement('div');
+    body.className='shop-body';
+    const name=document.createElement('div');
+    name.className='shop-name';
+    name.textContent=shop.name||'Shop';
+    const meta=document.createElement('div');
+    meta.className='shop-meta';
+    meta.textContent=`📍 ${shop.area||'Jaora'} • ${shop.category||'General'}`;
+    body.append(name,meta);
+    if(shop.isPremium){const badge=document.createElement('span');badge.className='badge badge-premium';badge.textContent='Premium';body.appendChild(badge);}
+    if(shop.isPopular){const badge=document.createElement('span');badge.className='badge badge-popular';badge.textContent='Popular';body.appendChild(badge);}
+    el.appendChild(body);
+    grid.appendChild(el);
+  });
 }
-document.getElementById('searchBox').addEventListener('input',filter);
-document.getElementById('townFilter').addEventListener('change',filter);
-document.getElementById('catFilter').addEventListener('change',filter);
-load();
+
+window.filterCat=(cat,btn)=>{
+  activeCat=cat;
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  render();
+}
+window.searchShops=()=>render();
+window.shareBazaar=async()=>{
+  const shareData={title:'Lokmart - Apna Local Bazaar',url:location.href};
+  if(navigator.share) await navigator.share(shareData);
+  else if(navigator.clipboard) await navigator.clipboard.writeText(location.href);
+};
+window.startVoiceSearch=()=>{
+  const Recognition=window.SpeechRecognition||window.webkitSpeechRecognition;
+  const status=document.getElementById('status');
+  if(!Recognition){status.textContent='Hindi voice search is not supported in this browser.';return;}
+  const recognition=new Recognition();
+  recognition.lang='hi-IN';
+  recognition.interimResults=false;
+  status.textContent='🎤 सुन रहा हूँ...';
+  recognition.onresult=event=>{
+    const transcript=event.results[0][0].transcript;
+    document.getElementById('searchInput').value=transcript;
+    status.textContent=`✅ आपने बोला: "${transcript}"`;
+    render();
+  };
+  recognition.onerror=()=>{status.textContent='Voice search failed. Please try again.';};
+  recognition.onend=()=>{if(status.textContent==='🎤 सुन रहा हूँ...')status.textContent='';};
+  recognition.start();
+};
+window.installLokmart=async()=>{
+  if(!deferredInstallPrompt)return;
+  await deferredInstallPrompt.prompt();
+  deferredInstallPrompt=null;
+  document.getElementById('installBanner').hidden=true;
+};
+window.addEventListener('beforeinstallprompt',event=>{
+  event.preventDefault();
+  deferredInstallPrompt=event;
+  document.getElementById('installBanner').hidden=false;
+});
+
+loadShops();
+if('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(error=>console.error('Service worker registration failed:',error));
 </script>
-</body>
-</html>
+</head>
+<body>
+<div class="header"><div class="brand"><img src="./favicon.svg" alt=""><div style="font-weight:800;font-family:Fraunces;">लोकमार्ट - Jaora</div></div><div style="font-size:11px;color:#6B7280;">Apna Local Bazaar</div></div>
+<div class="hero">
+  <h1 style="margin:0;">Jaora Bazaar 🛍️</h1>
+  <p style="margin:6px 0 12px 0;opacity:.9;font-size:13px;">Shop banners - Click to view products under shop</p>
+  <div class="search-controls"><input id="searchInput" class="search" placeholder="Search shop, area..." oninput="searchShops()"/><button class="voice-btn" onclick="startVoiceSearch()" aria-label="Hindi voice search">🎤 हिंदी</button></div>
+  <button class="share-btn" style="margin-top:8px;" onclick="shareBazaar()">Share Bazaar</button>
+  <p id="status" style="font-size:11px;opacity:.8;margin-top:8px;">Loading...</p>
+</div>
+<div class="filters">
+  <button class="filter-btn active" onclick="filterCat('All',this)">All</button>
+  <button class="filter-btn" onclick="filterCat('Clothing',this)">Clothing</button>
+  <button class="filter-btn" onclick="filterCat('Electronics',this)">Electronics</button>
+  <button class="filter-btn" onclick="filterCat('Decor',this)">Decor</button>
+  <button class="filter-btn" onclick="filterCat('Grocery',this)">Grocery</button>
+  <button class="filter-btn" onclick="filterCat('General',this)">General</button>
+</div>
+<div id="installBanner" class="container" hidden><button class="share-btn" onclick="installLokmart()">Install Lokmart app</button></div>
+<div class="container"><div id="shopsGrid" class="shops-grid"></div></div>
+</body></html>

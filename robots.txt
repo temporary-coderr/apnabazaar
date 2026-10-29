@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /jagruk-473287-control/
+Disallow: /apnabazaar/jagruk-473287-control/
+Sitemap: https://lokmart.in/sitemap.xml

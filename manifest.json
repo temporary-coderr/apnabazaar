@@ -1,0 +1,17 @@
+{
+  "name": "Lokmart - Apna Local Bazaar",
+  "short_name": "Lokmart",
+  "start_url": "/apnabazaar/",
+  "scope": "/apnabazaar/",
+  "display": "standalone",
+  "background_color": "#FFFBF5",
+  "theme_color": "#FF6B2C",
+  "icons": [
+    {
+      "src": "./favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

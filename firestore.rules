@@ -1,9 +1,103 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    match /{document=**} {
-      allow read: if true;
-      allow write: if request.auth != null;
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return signedIn() &&
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/admins/$(request.auth.uid)).data.role in ['admin', 'super-admin'];
+    }
+
+    function shop(shopId) {
+      return get(/databases/$(database)/documents/shops/$(shopId));
+    }
+
+    function ownsShop(shopId) {
+      return signedIn() && shop(shopId).data.ownerUid == request.auth.uid;
+    }
+
+    function premiumOwner(shopId) {
+      return ownsShop(shopId) &&
+        shop(shopId).data.isPremium == true &&
+        shop(shopId).data.subscriptionStatus == 'active';
+    }
+
+    function productCountIncremented(shopId, productId) {
+      return ownsShop(shopId) &&
+        shop(shopId).data.productCount is int &&
+        getAfter(/databases/$(database)/documents/shops/$(shopId)).data.productCount ==
+          shop(shopId).data.productCount + 1 &&
+        getAfter(/databases/$(database)/documents/shops/$(shopId)).data.lastAddedProductId == productId &&
+        !exists(/databases/$(database)/documents/products/$(productId)) &&
+        existsAfter(/databases/$(database)/documents/products/$(productId)) &&
+        getAfter(/databases/$(database)/documents/products/$(productId)).data.shopId == shopId;
+    }
+
+    match /admins/{uid} {
+      allow read: if isAdmin() || (signedIn() && request.auth.uid == uid);
+      allow write: if false;
+    }
+
+    match /shops/{shopId} {
+      allow read: if resource.data.approved == true ||
+        (signedIn() && resource.data.ownerUid == request.auth.uid) || isAdmin();
+      allow create, delete: if isAdmin();
+      allow update: if isAdmin() ||
+        (ownsShop(shopId) &&
+          request.resource.data.diff(resource.data).affectedKeys()
+            .hasOnly([
+              'bannerImage', 'updatedAt', 'instagram', 'facebook', 'youtube', 'website'
+            ])) ||
+        (request.resource.data.diff(resource.data).affectedKeys()
+            .hasOnly(['productCount', 'lastAddedProductId']) &&
+          productCountIncremented(shopId,request.resource.data.lastAddedProductId));
+    }
+
+    match /shopPrivate/{shopId} {
+      allow read, write: if isAdmin();
+    }
+
+    match /shopAnalytics/{shopId} {
+      allow read: if isAdmin() || premiumOwner(shopId);
+      allow create: if isAdmin() || (shop(shopId).data.approved == true &&
+        request.resource.data.keys().hasOnly([
+          'views', 'callClicks', 'mapClicks', 'bookClicks', 'instaClicks'
+        ]) &&
+        request.resource.data.keys().size() == 1 &&
+        request.resource.data.values().hasOnly([1]));
+      allow update: if isAdmin() || (shop(shopId).data.approved == true &&
+        request.resource.data.diff(resource.data).affectedKeys().size() == 1 &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          'views', 'callClicks', 'mapClicks', 'bookClicks', 'instaClicks'
+        ]) &&
+        request.resource.data[request.resource.data.diff(resource.data).affectedKeys().toList()[0]] ==
+          resource.data.get(request.resource.data.diff(resource.data).affectedKeys().toList()[0], 0) + 1);
+      allow delete: if isAdmin();
+    }
+
+    match /products/{productId} {
+      allow read: if shop(resource.data.shopId).data.approved == true ||
+        ownsShop(resource.data.shopId) || isAdmin();
+      allow create: if isAdmin() ||
+        (ownsShop(request.resource.data.shopId) &&
+          request.resource.data.keys().hasOnly([
+            'shopId', 'name', 'price', 'image', 'createdAt'
+          ]) &&
+          request.resource.data.name is string &&
+          request.resource.data.name.size() > 0 &&
+          request.resource.data.name.size() <= 120 &&
+          request.resource.data.image is string &&
+          request.resource.data.image.matches('https://res.cloudinary.com/.*') &&
+          productCountIncremented(request.resource.data.shopId,productId) &&
+          (premiumOwner(request.resource.data.shopId) ||
+            shop(request.resource.data.shopId).data.productCount < 10));
+      allow update: if isAdmin() ||
+        (ownsShop(resource.data.shopId) &&
+          request.resource.data.shopId == resource.data.shopId);
+      allow delete: if isAdmin();
     }
   }
 }
