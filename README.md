@@ -56,7 +56,7 @@ The QR print action uses `api.qrserver.com`; the shop URL is sent to that servic
 - Screenshots are evidence only. A plan stays pending until an administrator checks the UTR and exact amount in the bank / UPI app and approves it in the control panel.
 - Admin approval is performed in a Firestore transaction and sets a 30-day expiry for the selected plan. Rejection never activates a plan.
 - Plan prices are configurable in the admin panel. Defaults are ₹300 for listing, ₹400 for premium features, and ₹2,000 for a banner advertisement. Customer access remains free.
-- Configure the UPI ID and optionally upload the QR image in Admin → UPI Payment Settings before asking shop owners to submit payments.
+- Configure the UPI ID and optionally upload the QR image in Admin → UPI Payment Settings before asking shop owners to submit payments. Paid-listing enforcement is an explicit admin toggle so existing listings are not unexpectedly hidden during migration.
 
 ## Important deployment checklist
 
