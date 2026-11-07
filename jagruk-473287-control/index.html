@@ -300,10 +300,10 @@ function renderShops(filter=''){
             <input class="input" id="edit-bannerfile-${shop.id}" type="file" accept="image/*"/>
           </div>
           <div style="display:flex;gap:10px;flex-wrap:wrap;margin:6px 0;">
-            <label class="toggle"><input type="checkbox" id="edit-premium-${shop.id}" ${shop.isPremium?'checked':''}/> Premium</label>
-            <label class="toggle"><input type="checkbox" id="edit-popular-${shop.id}" ${shop.isPopular?'checked':''}/> Popular Rs1500</label>
-            <label class="toggle"><input type="checkbox" id="edit-bannerad-${shop.id}" ${shop.isBannerAd?'checked':''}/> Banner Ad Rs2000</label>
-            <label class="toggle"><input type="checkbox" id="edit-verified-${shop.id}" ${shop.isVerified?'checked':''}/> Verified Badge</label>
+            
+            
+            
+            
             <label class="toggle"><input type="checkbox" id="edit-approved-${shop.id}" ${shop.approved?'checked':''}/> Approved (Show to customers)</label>
           </div>
           <div class="preview" id="edit-preview-${shop.id}"><img id="edit-img-${shop.id}"/></div>
@@ -355,10 +355,6 @@ window.saveEdit = async(id)=>{
     const email=document.getElementById(`edit-email-${id}`).value.trim();
     const premiumPrice=Number(document.getElementById(`edit-price-${id}`).value);
     if(!Number.isFinite(premiumPrice)||premiumPrice<0) throw new Error('Premium price must be a non-negative number.');
-    const isPremium=document.getElementById(`edit-premium-${id}`).checked;
-    const isPopular=document.getElementById(`edit-popular-${id}`).checked;
-    const isBannerAd=document.getElementById(`edit-bannerad-${id}`).checked;
-    const isVerified=document.getElementById(`edit-verified-${id}`).checked;
     const approved=document.getElementById(`edit-approved-${id}`).checked;
     const file=document.getElementById(`edit-bannerfile-${id}`).files[0];
     if(!name||phone.length!==10||!email)throw new Error('Enter a shop name, valid 10-digit phone, and owner contact email.');
@@ -377,16 +373,10 @@ window.saveEdit = async(id)=>{
     const updateData = {
       name, phone,
       premiumPrice,
-      isPremium,
-      isPopular,
-      isBannerAd,
-      isVerified,
       approved,
       updatedAt: serverTimestamp()
     };
     if(bannerUrl) updateData.bannerImage = bannerUrl;
-    // Auto set subscription status
-    if(isPremium) { updateData.subscriptionStatus='active'; } else { updateData.subscriptionStatus='free'; }
     
     await updateDoc(doc(db,"shops",id), updateData);
     await setDoc(doc(db,"shopPrivate",id),{ownerEmail:email.toLowerCase()},{merge:true});
@@ -427,7 +417,6 @@ window.createShop = async()=>{
   const area=document.getElementById('newArea').value.trim();
   const address=document.getElementById('newAddress').value.trim();
   const price=Number(document.getElementById('newPrice').value);
-  const isPremium=document.getElementById('newPremium').checked;
   const file=document.getElementById('newBannerFile').files[0];
   
   if(!name||!ownerEmail||!ownerPass||!phone) return alert('Fill Name, Owner Email, Password, Mobile - Required!');
@@ -481,12 +470,12 @@ window.createShop = async()=>{
       address: address||area||'Jaora',
       bannerImage: '',
       premiumPrice: price,
-      isPremium: isPremium,
+      isPremium: false,
       isPopular: false,
       isBannerAd: false,
-      isVerified: isPremium,
+      isVerified: false,
       approved: false, // Needs APPROVE click after creation
-      subscriptionStatus: isPremium ? 'active' : 'free',
+      subscriptionStatus: 'free',
       productCount: 0,
       createdAt: serverTimestamp(),
       createdBy: auth.currentUser.uid
@@ -584,12 +573,11 @@ window.uploadCsv=async()=>{
         let ownerUid;
         try{ownerUid=(await createUserWithEmailAndPassword(secondaryAuth,email,record.password)).user.uid;}
         finally{await deleteApp(secondaryApp);}
-        const premium=record.ispremium.toLowerCase()==='true';
         const shopRef=await addDoc(collection(db,'shops'),{
           name:record.name,ownerUid,phone,category:record.category||'General',area:record.area||'Jaora',
           address:record.address||record.area||'Jaora',premiumPrice:Number(record.premiumprice)||500,
-          isPremium:premium,isPopular:false,isBannerAd:false,isVerified:premium,approved:false,
-          subscriptionStatus:premium?'active':'free',bannerImage:'',productCount:0,createdAt:serverTimestamp(),createdBy:auth.currentUser.uid
+          isPremium:false,isPopular:false,isBannerAd:false,isVerified:false,approved:false,
+          subscriptionStatus:'free',bannerImage:'',productCount:0,createdAt:serverTimestamp(),createdBy:auth.currentUser.uid
         });
         await setDoc(doc(db,'shopPrivate',shopRef.id),{ownerUid,ownerEmail:email});
         created++;
@@ -680,7 +668,7 @@ window.uploadCsv=async()=>{
       <input id="newBannerFile" class="input" type="file" accept="image/*"/>
     </div>
     <div style="margin:6px 0;">
-      <label class="toggle"><input type="checkbox" id="newPremium"/> Make Premium (Rs custom price)</label>
+      <span class="small">New shops start on the free plan. Premium activates only after verified UPI payment.</span>
       <label class="toggle"><input type="checkbox" checked/> Needs APPROVE after creation</label>
     </div>
     <div class="preview" id="newPreview"><img id="newImg"/></div>
