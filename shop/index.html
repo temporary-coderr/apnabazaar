@@ -34,7 +34,7 @@ h1,h2,h3{font-family:'Fraunces',serif}
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, sendPasswordResetEmail, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore, collection, query, where, getDocs, doc, getDoc, updateDoc, runTransaction } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, collection, query, where, getDocs, doc, getDoc, updateDoc, setDoc, serverTimestamp, runTransaction } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyBtcdBS75tgYJ5W1wilHT9y4rNI1LzUAHI",
@@ -95,6 +95,7 @@ onAuthStateChanged(auth, async (user)=>{
     shopProducts = psnap.docs.map(d=>({id:d.id,...d.data()}));
     productCount = shopProducts.length;
     await renderShop();
+    await loadPaymentPanel();
   }catch(e){
     document.getElementById('loadStatus').textContent='Error: '+e.message;
   }
@@ -243,6 +244,70 @@ window.doLogin = async()=>{
 }
 
 window.doLogout = async()=>{ await signOut(auth); location.reload(); }
+async function loadPaymentPanel(){
+  const status=document.getElementById('paymentStatus');
+  if(!status||!currentShop)return;
+  try{
+    const [settingsSnap,paymentsSnap]=await Promise.all([
+      getDoc(doc(db,'paymentSettings','public')),
+      getDocs(query(collection(db,'payments'),where('shopId','==',currentShop.id)))
+    ]);
+    const settings=settingsSnap.exists()?settingsSnap.data():{};
+    const upiId=typeof settings.upiId==='string'?settings.upiId.trim():'';
+    document.getElementById('paymentUpi').textContent=upiId||'UPI details are not configured yet. Please contact the administrator.';
+    const qr=document.getElementById('paymentQr');
+    if(typeof settings.qrImage==='string'&&settings.qrImage.startsWith('https://res.cloudinary.com/')){
+      qr.src=settings.qrImage;qr.hidden=false;
+    }else{qr.hidden=true;qr.removeAttribute('src');}
+    const plans=[
+      {id:'listing',label:'Shop listing — 30 days',amount:Number(settings.listingAmount)},
+      {id:'premium',label:'Premium features — 30 days',amount:Number(settings.premiumAmount)},
+      {id:'banner',label:'Banner advertisement — 30 days',amount:Number(settings.bannerAmount)}
+    ].filter(p=>Number.isFinite(p.amount)&&p.amount>0);
+    const select=document.getElementById('paymentPlan');select.replaceChildren();
+    plans.forEach(p=>{const option=document.createElement('option');option.value=p.id;option.textContent=p.label+' · ₹'+p.amount;select.appendChild(option);});
+    document.getElementById('paymentSubmit').disabled=!upiId||plans.length===0;
+    const list=document.getElementById('paymentHistory');list.replaceChildren();
+    if(paymentsSnap.empty){list.textContent='No payment requests submitted yet.';}
+    else paymentsSnap.docs.forEach(d=>{
+      const data=d.data(),row=document.createElement('p');
+      row.className='small';row.textContent='UTR '+d.id+' · '+data.planId+' · ₹'+data.amount+' · '+data.status;
+      list.appendChild(row);
+    });
+  }catch(error){status.textContent='Could not load payment settings: '+error.message;}
+}
+window.submitPayment=async()=>{
+  const status=document.getElementById('paymentStatus');
+  const utr=document.getElementById('paymentUtr').value.trim().toUpperCase().replace(/[^A-Z0-9]/g,'');
+  const file=document.getElementById('paymentScreenshot').files[0];
+  const planId=document.getElementById('paymentPlan').value;
+  if(!currentShop)return;
+  if(!/^[A-Z0-9]{6,32}$/.test(utr)){status.textContent='Enter a valid UTR / transaction reference (6–32 letters or numbers).';return;}
+  if(!file||!file.type.startsWith('image/')||file.size>5*1024*1024){status.textContent='Upload a payment screenshot under 5 MB.';return;}
+  const settingsSnap=await getDoc(doc(db,'paymentSettings','public'));
+  if(!settingsSnap.exists()){status.textContent='Payment details are not configured. Contact the administrator.';return;}
+  const settings=settingsSnap.data();
+  const amounts={listing:Number(settings.listingAmount),premium:Number(settings.premiumAmount),banner:Number(settings.bannerAmount)};
+  const amount=amounts[planId];
+  if(!Number.isFinite(amount)||amount<=0){status.textContent='Selected plan is not available.';return;}
+  const paymentRef=doc(db,'payments',utr);
+  if((await getDoc(paymentRef)).exists()){status.textContent='This UTR has already been submitted. Contact the administrator if this is your payment.';return;}
+  status.textContent='Uploading screenshot securely…';
+  document.getElementById('paymentSubmit').disabled=true;
+  try{
+    const screenshotUrl=await uploadToCloudinary(file,`lokmart/payments/${currentShop.id}`);
+    await setDoc(paymentRef,{
+      shopId:currentShop.id,ownerUid:auth.currentUser.uid,planId,amount,utr,
+      screenshotUrl,status:'pending',createdAt:serverTimestamp()
+    });
+    status.textContent='Payment submitted for manual verification. Your plan will activate only after the administrator checks the UTR in the bank / UPI app.';
+    document.getElementById('paymentUtr').value='';
+    document.getElementById('paymentScreenshot').value='';
+    await loadPaymentPanel();
+  }catch(error){status.textContent='Submission failed: '+(error.code==='permission-denied'?'Check the UTR or contact the administrator.':error.message);}
+  finally{document.getElementById('paymentSubmit').disabled=false;}
+}
+
 window.saveSocialLinks=async()=>{
   if(!currentShop||!(currentShop.isPremium&&currentShop.subscriptionStatus==='active'))return;
   const fields=['instagram','facebook','youtube','website'];
@@ -381,6 +446,22 @@ window.uploadProduct = async()=>{
     <button id="productUploadBtn" class="btn btn-dark" onclick="uploadProduct()">☁️ Add Product - Under Shop Name</button>
     <p id="productStatus" class="small" style="margin-top:8px;"></p>
     <p id="limitMsg" style="color:#FF6B2C;font-size:12px;font-weight:600;"></p>
+  </div>
+
+  <div class="card" id="manualPaymentCard">
+    <h3>💳 Pay by UPI — Manual Verification</h3>
+    <p class="small">Choose a plan, pay using the UPI details below, then submit the UTR and payment screenshot. A screenshot alone does not activate a plan; the administrator verifies the transaction independently.</p>
+    <p><b>UPI ID:</b> <span id="paymentUpi">Loading payment details…</span></p>
+    <img id="paymentQr" alt="UPI payment QR code" style="display:none;width:190px;max-width:100%;border:1px solid #eee;border-radius:12px;margin:8px 0;">
+    <label class="small" for="paymentPlan">Plan</label>
+    <select id="paymentPlan" class="input"></select>
+    <label class="small" for="paymentUtr">UTR / transaction reference</label>
+    <input id="paymentUtr" class="input" maxlength="32" autocomplete="off" placeholder="Enter UTR / transaction ID">
+    <label class="small" for="paymentScreenshot">Payment screenshot (max 5 MB)</label>
+    <input id="paymentScreenshot" class="input" type="file" accept="image/*">
+    <button id="paymentSubmit" class="btn" onclick="submitPayment()" disabled>Submit for manual verification</button>
+    <p id="paymentStatus" class="small" role="status"></p>
+    <h4>Payment history</h4><div id="paymentHistory" class="small">Loading…</div>
   </div>
 
   <div id="socialLocked" class="card" style="background:#FFF0E6;border:1px dashed #FF6B2C;">
