@@ -251,15 +251,15 @@ async function loadPaymentPanel(){
   try{
     const [settingsSnap,paymentsSnap]=await Promise.all([
       getDoc(doc(db,'paymentSettings','public')),
-      getDocs(query(collection(db,'payments'),where('shopId','==',currentShop.id)))
+      getDocs(query(collection(db,'payments'),where('shopId','==',currentShop.id),where('ownerUid','==',auth.currentUser.uid)))
     ]);
     const settings=settingsSnap.exists()?settingsSnap.data():{};
     const upiId=typeof settings.upiId==='string'?settings.upiId.trim():'';
     document.getElementById('paymentUpi').textContent=upiId||'UPI details are not configured yet. Please contact the administrator.';
     const qr=document.getElementById('paymentQr');
     if(typeof settings.qrImage==='string'&&settings.qrImage.startsWith('https://res.cloudinary.com/')){
-      qr.src=settings.qrImage;qr.hidden=false;
-    }else{qr.hidden=true;qr.removeAttribute('src');}
+      qr.src=settings.qrImage;qr.hidden=false;qr.style.display='block';
+    }else{qr.hidden=true;qr.style.display='none';qr.removeAttribute('src');}
     const plans=[
       {id:'listing',label:'Shop listing — 30 days',amount:Number(settings.listingAmount)},
       {id:'premium',label:'Premium features — 30 days',amount:Number(settings.premiumAmount)},
