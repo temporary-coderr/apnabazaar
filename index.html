@@ -72,8 +72,11 @@ async function loadShops(){
   try{
     const q = query(collection(db,"shops"), where("approved","==",true));
     const snap = await getDocs(q);
-    const settingsSnap=await getDoc(doc(db,'paymentSettings','public'));
-    const enforcePaidListing=settingsSnap.exists()&&settingsSnap.data().enforcePaidListing===true;
+    let enforcePaidListing=false;
+    try{
+      const settingsSnap=await getDoc(doc(db,'paymentSettings','public'));
+      enforcePaidListing=settingsSnap.exists()&&settingsSnap.data().enforcePaidListing===true;
+    }catch(settingsError){console.warn('Payment settings unavailable; keeping existing approved listings visible until rules are deployed.',settingsError.code);}
     allShops = snap.docs.map(d=>({id:d.id,...d.data()})).filter(shop=>!enforcePaidListing||(!!shop.listingPaidUntil?.toDate&&shop.listingPaidUntil.toDate().getTime()>Date.now()));
     allShops.sort((a,b)=>{
       const scoreA=(bannerActive(a)?1000:0)+(a.isPopular?500:0)+(premiumActive(a)?200:0);
