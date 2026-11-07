@@ -71,6 +71,8 @@ async function load(){
     const snap=await getDoc(doc(db,'shops',shopId));
     if(!snap.exists()||snap.data().approved!==true){status.textContent='This shop is unavailable or has not been approved yet.';return;}
     const shop=snap.data();
+    const premiumExpiry=shop.premiumUntil?.toDate?shop.premiumUntil.toDate():null;
+    const premiumActive=shop.isPremium===true&&shop.subscriptionStatus==='active'&&premiumExpiry&&premiumExpiry.getTime()>Date.now();
     el('shopName').textContent=shop.name||'Local shop';
     el('shopMeta').textContent=[shop.category,shop.area,shop.city].filter(Boolean).join(' · ');
     el('description').textContent=shop.description||'Contact this shop directly for product details and availability.';
@@ -79,11 +81,11 @@ async function load(){
     const phone=String(shop.phone||'').replace(/\D/g,'');
     if(phone.length===10||phone.length===12){
       action('Call shop','tel:'+phone);
-      action('WhatsApp','https://wa.me/'+(phone.length===10?'91':'')+phone,true);
+      if(premiumActive)action('WhatsApp','https://wa.me/'+(phone.length===10?'91':'')+phone,true);
     }
-    const map=safeUrl(shop.map)||safeUrl(shop.mapUrl)||'';
+    const map=premiumActive?(safeUrl(shop.map)||safeUrl(shop.mapUrl)||''):'';
     if(map)action('Get directions',map,true);
-    for(const field of ['instagram','facebook','youtube','website']){
+    for(const field of (premiumActive?['instagram','facebook','youtube','website']:[])){
       const url=safeUrl(shop[field]);if(url)action(field[0].toUpperCase()+field.slice(1),url,true);
     }
     const productsSnap=await getDocs(query(collection(db,'products'),where('shopId','==',shopId)));
