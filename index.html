@@ -47,7 +47,7 @@ h1{font-family:'Fraunces',serif}
 </style>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, collection, query, where, getDocs, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyBtcdBS75tgYJ5W1wilHT9y4rNI1LzUAHI",
@@ -72,7 +72,9 @@ async function loadShops(){
   try{
     const q = query(collection(db,"shops"), where("approved","==",true));
     const snap = await getDocs(q);
-    allShops = snap.docs.map(d=>({id:d.id,...d.data()})).filter(shop=>!!shop.listingPaidUntil?.toDate&&shop.listingPaidUntil.toDate().getTime()>Date.now());
+    const settingsSnap=await getDoc(doc(db,'paymentSettings','public'));
+    const enforcePaidListing=settingsSnap.exists()&&settingsSnap.data().enforcePaidListing===true;
+    allShops = snap.docs.map(d=>({id:d.id,...d.data()})).filter(shop=>!enforcePaidListing||(!!shop.listingPaidUntil?.toDate&&shop.listingPaidUntil.toDate().getTime()>Date.now()));
     allShops.sort((a,b)=>{
       const scoreA=(bannerActive(a)?1000:0)+(a.isPopular?500:0)+(premiumActive(a)?200:0);
       const scoreB=(bannerActive(b)?1000:0)+(b.isPopular?500:0)+(premiumActive(b)?200:0);
