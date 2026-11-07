@@ -16,13 +16,32 @@ service cloud.firestore {
     }
 
     function ownsShop(shopId) {
-      return signedIn() && shop(shopId).data.ownerUid == request.auth.uid;
+      return signedIn() &&
+        exists(/databases/$(database)/documents/shops/$(shopId)) &&
+        shop(shopId).data.ownerUid == request.auth.uid;
     }
 
     function premiumOwner(shopId) {
       return ownsShop(shopId) &&
         shop(shopId).data.isPremium == true &&
-        shop(shopId).data.subscriptionStatus == 'active';
+        shop(shopId).data.subscriptionStatus == 'active' &&
+        shop(shopId).data.premiumUntil is timestamp &&
+        shop(shopId).data.premiumUntil > request.time;
+    }
+
+    function validCloudinaryImage(value) {
+      return value is string &&
+        value.matches('https://res\\.cloudinary\\.com/.*');
+    }
+
+    function validPlanAmount(planId, amount) {
+      return exists(/databases/$(database)/documents/paymentSettings/public) &&
+        ((planId == 'listing' &&
+          amount == get(/databases/$(database)/documents/paymentSettings/public).data.listingAmount) ||
+         (planId == 'premium' &&
+          amount == get(/databases/$(database)/documents/paymentSettings/public).data.premiumAmount) ||
+         (planId == 'banner' &&
+          amount == get(/databases/$(database)/documents/paymentSettings/public).data.bannerAmount));
     }
 
     function productCountIncremented(shopId, productId) {
@@ -47,13 +66,25 @@ service cloud.firestore {
       allow create, delete: if isAdmin();
       allow update: if isAdmin() ||
         (ownsShop(shopId) &&
-          request.resource.data.diff(resource.data).affectedKeys()
-            .hasOnly([
-              'bannerImage', 'updatedAt', 'instagram', 'facebook', 'youtube', 'website'
-            ])) ||
-        (request.resource.data.diff(resource.data).affectedKeys()
-            .hasOnly(['productCount', 'lastAddedProductId']) &&
-          productCountIncremented(shopId,request.resource.data.lastAddedProductId));
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+            'bannerImage', 'updatedAt', 'instagram', 'facebook', 'youtube', 'website'
+          ]) &&
+          (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['bannerImage']) ||
+            validCloudinaryImage(request.resource.data.bannerImage)) &&
+          (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['updatedAt']) ||
+            request.resource.data.updatedAt is timestamp) &&
+          (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['instagram']) ||
+            (request.resource.data.instagram == '' || request.resource.data.instagram.matches('https://.*'))) &&
+          (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['facebook']) ||
+            (request.resource.data.facebook == '' || request.resource.data.facebook.matches('https://.*'))) &&
+          (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['youtube']) ||
+            (request.resource.data.youtube == '' || request.resource.data.youtube.matches('https://.*'))) &&
+          (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['website']) ||
+            (request.resource.data.website == '' || request.resource.data.website.matches('https://.*')))) ||
+        (request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+            'productCount', 'lastAddedProductId'
+          ]) &&
+          productCountIncremented(shopId, request.resource.data.lastAddedProductId));
     }
 
     match /shopPrivate/{shopId} {
@@ -62,19 +93,21 @@ service cloud.firestore {
 
     match /shopAnalytics/{shopId} {
       allow read: if isAdmin() || premiumOwner(shopId);
-      allow create: if isAdmin() || (shop(shopId).data.approved == true &&
-        request.resource.data.keys().hasOnly([
-          'views', 'callClicks', 'mapClicks', 'bookClicks', 'instaClicks'
-        ]) &&
-        request.resource.data.keys().size() == 1 &&
-        request.resource.data.values().hasOnly([1]));
-      allow update: if isAdmin() || (shop(shopId).data.approved == true &&
-        request.resource.data.diff(resource.data).affectedKeys().size() == 1 &&
-        request.resource.data.diff(resource.data).affectedKeys().hasOnly([
-          'views', 'callClicks', 'mapClicks', 'bookClicks', 'instaClicks'
-        ]) &&
-        request.resource.data[request.resource.data.diff(resource.data).affectedKeys().toList()[0]] ==
-          resource.data.get(request.resource.data.diff(resource.data).affectedKeys().toList()[0], 0) + 1);
+      allow create: if isAdmin() ||
+        (shop(shopId).data.approved == true &&
+          request.resource.data.keys().hasOnly([
+            'views', 'callClicks', 'mapClicks', 'bookClicks', 'instaClicks'
+          ]) &&
+          request.resource.data.keys().size() == 1 &&
+          request.resource.data.values().hasOnly([1]));
+      allow update: if isAdmin() ||
+        (shop(shopId).data.approved == true &&
+          request.resource.data.diff(resource.data).affectedKeys().size() == 1 &&
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+            'views', 'callClicks', 'mapClicks', 'bookClicks', 'instaClicks'
+          ]) &&
+          request.resource.data[request.resource.data.diff(resource.data).affectedKeys().toList()[0]] ==
+            resource.data.get(request.resource.data.diff(resource.data).affectedKeys().toList()[0], 0) + 1);
       allow delete: if isAdmin();
     }
 
@@ -86,18 +119,62 @@ service cloud.firestore {
           request.resource.data.keys().hasOnly([
             'shopId', 'name', 'price', 'image', 'createdAt'
           ]) &&
+          request.resource.data.shopId is string &&
           request.resource.data.name is string &&
           request.resource.data.name.size() > 0 &&
           request.resource.data.name.size() <= 120 &&
-          request.resource.data.image is string &&
-          request.resource.data.image.matches('https://res.cloudinary.com/.*') &&
-          productCountIncremented(request.resource.data.shopId,productId) &&
+          (!('price' in request.resource.data) ||
+            (request.resource.data.price is number && request.resource.data.price >= 0)) &&
+          validCloudinaryImage(request.resource.data.image) &&
+          request.resource.data.createdAt is timestamp &&
+          productCountIncremented(request.resource.data.shopId, productId) &&
           (premiumOwner(request.resource.data.shopId) ||
             shop(request.resource.data.shopId).data.productCount < 10));
       allow update: if isAdmin() ||
         (ownsShop(resource.data.shopId) &&
-          request.resource.data.shopId == resource.data.shopId);
+          request.resource.data.shopId == resource.data.shopId &&
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['name', 'price', 'image']) &&
+          request.resource.data.name is string &&
+          request.resource.data.name.size() > 0 &&
+          request.resource.data.name.size() <= 120 &&
+          (!('price' in request.resource.data) ||
+            (request.resource.data.price is number && request.resource.data.price >= 0)) &&
+          validCloudinaryImage(request.resource.data.image));
       allow delete: if isAdmin();
+    }
+
+    match /paymentSettings/{settingsId} {
+      allow read: if settingsId == 'public';
+      allow write: if isAdmin() && settingsId == 'public';
+    }
+
+    // The UTR is the document ID. This makes the same normalized UTR globally unique.
+    match /payments/{paymentId} {
+      allow read: if isAdmin() ||
+        (signedIn() && resource.data.ownerUid == request.auth.uid &&
+          ownsShop(resource.data.shopId));
+      allow create: if signedIn() &&
+        request.resource.data.keys().hasOnly([
+          'shopId', 'ownerUid', 'planId', 'amount', 'utr',
+          'screenshotUrl', 'status', 'createdAt'
+        ]) &&
+        request.resource.data.shopId is string &&
+        ownsShop(request.resource.data.shopId) &&
+        request.resource.data.ownerUid == request.auth.uid &&
+        request.resource.data.planId in ['listing', 'premium', 'banner'] &&
+        request.resource.data.amount is int &&
+        request.resource.data.amount > 0 &&
+        validPlanAmount(request.resource.data.planId, request.resource.data.amount) &&
+        request.resource.data.utr == paymentId &&
+        paymentId.matches('^[A-Z0-9]{6,32}$') &&
+        validCloudinaryImage(request.resource.data.screenshotUrl) &&
+        request.resource.data.status == 'pending' &&
+        request.resource.data.createdAt is timestamp;
+      allow update, delete: if isAdmin();
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
     }
   }
 }

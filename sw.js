@@ -1,4 +1,4 @@
-const CACHE_NAME = 'lokmart-v1';
+const CACHE_NAME = 'lokmart-v2';
 const APP_SHELL = [
   '/apnabazaar/',
   '/apnabazaar/manifest.json',

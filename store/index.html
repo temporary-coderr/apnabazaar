@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="index,follow">
+<title>Shop | Lokmart</title>
+<meta name="description" content="Explore products and contact this local shop on Lokmart.">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Fraunces:wght@700&display=swap" rel="stylesheet">
+<style>
+:root{--orange:#ff6b2c;--bg:#fffbf5;--ink:#1a1a1a;--muted:#6b7280;--line:#f3e8d3}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px 'Plus Jakarta Sans',sans-serif}
+header{background:#fff;border-bottom:1px solid var(--line);padding:14px 18px;display:flex;justify-content:space-between;align-items:center}
+a{color:inherit}.brand{font-weight:800;text-decoration:none}.wrap{max-width:1000px;margin:auto;padding:22px 16px}
+.hero,.panel{background:#fff;border:1px solid var(--line);border-radius:18px;overflow:hidden;box-shadow:0 5px 18px #0000000a}
+.banner{width:100%;height:260px;object-fit:cover;background:#fff0e6;display:block}.hero-body{padding:22px}
+h1{font:700 clamp(27px,5vw,40px) Fraunces,serif;margin:0 0 6px}.muted{color:var(--muted);font-size:13px}
+.actions{display:flex;flex-wrap:wrap;gap:9px;margin-top:16px}.btn{border:0;border-radius:11px;background:var(--ink);color:white;padding:11px 16px;text-decoration:none;font-weight:700;cursor:pointer}.btn.alt{background:#fff0e6;color:var(--ink);border:1px solid var(--line)}
+h2{font:700 25px Fraunces,serif;margin:28px 0 12px}.products{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:14px}
+.product{background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden}.product img,.placeholder{width:100%;height:170px;object-fit:cover;background:#fff0e6;display:grid;place-items:center}.placeholder{font-size:38px}.product-body{padding:12px}.product-name{font-weight:800;overflow-wrap:anywhere}.price{font-weight:800;color:var(--orange);margin:6px 0}
+.notice{padding:30px;text-align:center;background:#fff;border:1px solid var(--line);border-radius:16px;color:var(--muted)}
+footer{padding:26px 0;color:var(--muted);font-size:12px}
+@media(max-width:600px){.banner{height:190px}.products{grid-template-columns:repeat(2,minmax(0,1fr))}.product img,.placeholder{height:130px}}
+</style>
+</head>
+<body>
+<header><a class="brand" href="../">🛍 Lokmart</a><a href="../" class="muted">← All shops</a></header>
+<main class="wrap">
+<div id="status" class="notice" role="status">Loading shop…</div>
+<section id="shopPage" hidden>
+<div class="hero">
+<img id="banner" class="banner" alt="Shop banner" hidden>
+<div class="hero-body">
+<h1 id="shopName"></h1><div id="shopMeta" class="muted"></div>
+<p id="description"></p><div class="actions" id="shopActions"></div>
+</div></div>
+<h2>Products</h2><div id="products" class="products"></div>
+</section>
+<footer>Lokmart — Apna local bazaar. Listings only; contact shops directly for availability and purchases.</footer>
+</main>
+<script type="module">
+import { db } from '../js/firebase-config.js';
+import { doc, getDoc, collection, query, where, getDocs, setDoc, increment } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
+
+const params=new URLSearchParams(location.search);
+const shopId=params.get('id');
+const status=document.getElementById('status');
+const page=document.getElementById('shopPage');
+const el=id=>document.getElementById(id);
+const safeUrl=(value,hosts=[])=>{
+  try{const u=new URL(value);return u.protocol==='https:'&&(!hosts.length||hosts.some(h=>u.hostname===h||u.hostname.endsWith('.'+h)))?u.href:'';}catch{return '';}
+};
+function action(label,href,external=false){
+  if(!href)return;
+  const a=document.createElement('a');a.className='btn';a.textContent=label;a.href=href;
+  if(external){a.target='_blank';a.rel='noopener noreferrer';}
+  el('shopActions').appendChild(a);
+}
+async function track(field){
+  if(!shopId)return;
+  try{
+    const ref=doc(db,'shopAnalytics',shopId);
+    await setDoc(ref,{[field]:increment(1)},{merge:true});
+  }catch(error){console.debug('Analytics unavailable:',error.code||error.message);}
+}
+async function load(){
+  if(!shopId||shopId.length>128){status.textContent='This shop link is invalid.';return;}
+  try{
+    const snap=await getDoc(doc(db,'shops',shopId));
+    if(!snap.exists()||snap.data().approved!==true){status.textContent='This shop is unavailable or has not been approved yet.';return;}
+    const shop=snap.data();
+    let enforcePaidListing=false;
+    try{
+      const settingsSnap=await getDoc(doc(db,'paymentSettings','public'));
+      enforcePaidListing=settingsSnap.exists()&&settingsSnap.data().enforcePaidListing===true;
+    }catch(settingsError){console.warn('Payment settings unavailable; retaining current approved shop visibility until rules are deployed.',settingsError.code);}
+    const listingExpiry=shop.listingPaidUntil?.toDate?shop.listingPaidUntil.toDate():null;
+    if(enforcePaidListing&&(!listingExpiry||listingExpiry.getTime()<=Date.now())){status.textContent='This shop listing is not currently active.';return;}
+    const premiumExpiry=shop.premiumUntil?.toDate?shop.premiumUntil.toDate():null;
+    const premiumActive=shop.isPremium===true&&shop.subscriptionStatus==='active'&&premiumExpiry&&premiumExpiry.getTime()>Date.now();
+    el('shopName').textContent=shop.name||'Local shop';
+    el('shopMeta').textContent=[shop.category,shop.area,shop.city].filter(Boolean).join(' · ');
+    el('description').textContent=shop.description||'Contact this shop directly for product details and availability.';
+    const banner=safeUrl(shop.bannerImage,['res.cloudinary.com']);
+    if(banner){el('banner').src=banner;el('banner').hidden=false;}
+    const phone=String(shop.phone||'').replace(/\D/g,'');
+    if(phone.length===10||phone.length===12){
+      action('Call shop','tel:'+phone);
+      if(premiumActive)action('WhatsApp','https://wa.me/'+(phone.length===10?'91':'')+phone,true);
+    }
+    const map=premiumActive?(safeUrl(shop.map)||safeUrl(shop.mapUrl)||''):'';
+    if(map)action('Get directions',map,true);
+    for(const field of (premiumActive?['instagram','facebook','youtube','website']:[])){
+      const url=safeUrl(shop[field]);if(url)action(field[0].toUpperCase()+field.slice(1),url,true);
+    }
+    const productsSnap=await getDocs(query(collection(db,'products'),where('shopId','==',shopId)));
+    const grid=el('products');grid.replaceChildren();
+    if(productsSnap.empty){
+      const empty=document.createElement('div');empty.className='notice';empty.textContent='No products have been listed yet.';grid.appendChild(empty);
+    }else{
+      productsSnap.forEach(p=>{
+        const item=p.data(),card=document.createElement('article');card.className='product';
+        const imageUrl=safeUrl(item.image,['res.cloudinary.com']);
+        if(imageUrl){const img=document.createElement('img');img.src=imageUrl;img.alt=item.name||'Product';img.loading='lazy';card.appendChild(img);}
+        else{const ph=document.createElement('div');ph.className='placeholder';ph.textContent='📦';card.appendChild(ph);}
+        const body=document.createElement('div');body.className='product-body';
+        const name=document.createElement('div');name.className='product-name';name.textContent=item.name||'Product';body.appendChild(name);
+        if(item.price!==undefined&&item.price!==null&&item.price!==''){const price=document.createElement('div');price.className='price';price.textContent='₹'+String(item.price);body.appendChild(price);}
+        if(phone){const buy=document.createElement('a');buy.className='btn alt';buy.href='https://wa.me/'+(phone.length===10?'91':'')+phone+'?text='+encodeURIComponent('Hello, I am interested in '+(item.name||'this product')+'.');buy.target='_blank';buy.rel='noopener noreferrer';buy.textContent='Ask on WhatsApp';body.appendChild(buy);}
+        card.appendChild(body);grid.appendChild(card);
+      });
+    }
+    if(phone)el('shopActions').querySelector('a')?.addEventListener('click',()=>track('callClicks'));
+    const wa=Array.from(el('shopActions').querySelectorAll('a')).find(a=>a.textContent==='WhatsApp');
+    if(wa)wa.addEventListener('click',()=>track('bookClicks'));
+    const mapAction=Array.from(el('shopActions').querySelectorAll('a')).find(a=>a.textContent==='Get directions');
+    if(mapAction)mapAction.addEventListener('click',()=>track('mapClicks'));
+    await track('views');
+    status.hidden=true;page.hidden=false;
+  }catch(error){
+    console.error(error);status.textContent='Unable to load this shop right now. Please refresh and try again.';
+  }
+}
+load();
+</script>
+</body></html>

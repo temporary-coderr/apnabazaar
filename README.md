@@ -3,7 +3,7 @@
 Static Firebase storefront for local shops. Pages are served from folders so their URLs do not need `.html`:
 
 - `/apnabazaar/` - approved shop banners, search, categories, Hindi voice search, sharing, and PWA install
-- `/apnabazaar/store/?id=SHOP_ID` - shop details, products, contact/map actions, WhatsApp product selection, share, and printable QR
+- `/apnabazaar/store/?id=SHOP_ID` - public shop details, products, contact actions, and printable QR
 - `/apnabazaar/shop/` - Firebase owner login, Cloudinary banner/product uploads, premium links, and private premium analytics
 - `/apnabazaar/jagruk-473287-control/` - administrator login, approval/edit/delete, CSV import, analytics, and shop QR codes
 
@@ -47,3 +47,27 @@ The admin page must be able to read and write `shops`, `shopPrivate`, and `shopA
 The service worker caches the app shell and same-origin GET responses. Firebase data and Cloudinary media still require connectivity on a first visit. Hindi voice input requires a browser that supports the Web Speech API, typically Chrome on Android.
 
 The QR print action uses `api.qrserver.com`; the shop URL is sent to that service to generate the image. Sitemap currently lists the homepage only; dynamic Firestore shop URLs cannot be enumerated by this static site at build time.
+
+
+## Manual UPI payments (no payment gateway)
+
+- Shop owners select a plan in the owner dashboard, pay using the UPI ID / QR configured by the administrator, then submit the UTR and a payment screenshot.
+- The UTR is normalized to uppercase letters/numbers and used as the `payments/{UTR}` document ID. Firestore rules prevent another owner from creating a payment with the same UTR.
+- Screenshots are evidence only. A plan stays pending until an administrator checks the UTR and exact amount in the bank / UPI app and approves it in the control panel.
+- Admin approval is performed in a Firestore transaction and sets a 30-day expiry for the selected plan. Rejection never activates a plan.
+- Plan prices are configurable in the admin panel. Defaults are ₹300 for listing, ₹400 for premium features, and ₹2,000 for a banner advertisement. Customer access remains free.
+- Configure the UPI ID and optionally upload the QR image in Admin → UPI Payment Settings before asking shop owners to submit payments. Paid-listing enforcement is an explicit admin toggle so existing listings are not unexpectedly hidden during migration.
+
+## Important deployment checklist
+
+1. Publish the updated `firestore.rules` from the Firebase Console (Firestore Database → Rules). Updating this repository does **not** publish Firebase rules automatically.
+2. In Firebase Authentication, keep Email/Password enabled and confirm only administrator UIDs listed in `admins/{uid}` have admin access.
+3. In Cloudinary, restrict the unsigned upload preset to image formats, set a small upload-size limit, disable overwrites, and monitor usage. A public unsigned preset is not a secret.
+4. Restrict the Firebase API key by HTTP referrer in Google Cloud and enable Firebase App Check for supported web providers before enforcing it.
+5. Test owner login, product creation, public shop pages, payment submission, duplicate UTR rejection, admin approval/rejection, and expiry before launch.
+6. Back up Firestore data before deploying rules or running any migration.
+
+The web app cannot independently prove a UPI payment. The administrator must verify the transaction in the bank / UPI application. Do not approve based only on a screenshot or the owner's claim.
+
+
+The GitHub Actions `Validate Lokmart` workflow checks JavaScript syntax, inline page scripts, JSON validity, and branch whitespace on pushes and pull requests.
