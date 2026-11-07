@@ -68,3 +68,6 @@ The QR print action uses `api.qrserver.com`; the shop URL is sent to that servic
 6. Back up Firestore data before deploying rules or running any migration.
 
 The web app cannot independently prove a UPI payment. The administrator must verify the transaction in the bank / UPI application. Do not approve based only on a screenshot or the owner's claim.
+
+
+The GitHub Actions `Validate Lokmart` workflow checks JavaScript syntax, inline page scripts, JSON validity, and branch whitespace on pushes and pull requests.
