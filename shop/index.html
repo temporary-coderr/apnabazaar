@@ -292,7 +292,6 @@ window.submitPayment=async()=>{
   const amount=amounts[planId];
   if(!Number.isFinite(amount)||amount<=0){status.textContent='Selected plan is not available.';return;}
   const paymentRef=doc(db,'payments',utr);
-  if((await getDoc(paymentRef)).exists()){status.textContent='This UTR has already been submitted. Contact the administrator if this is your payment.';return;}
   status.textContent='Uploading screenshot securely…';
   document.getElementById('paymentSubmit').disabled=true;
   try{
@@ -305,7 +304,7 @@ window.submitPayment=async()=>{
     document.getElementById('paymentUtr').value='';
     document.getElementById('paymentScreenshot').value='';
     await loadPaymentPanel();
-  }catch(error){status.textContent='Submission failed: '+(error.code==='permission-denied'?'Check the UTR or contact the administrator.':error.message);}
+  }catch(error){status.textContent='Submission failed: '+(error.code==='permission-denied'?'This UTR may already be used, or the latest Firestore rules have not been deployed. Contact the administrator if needed.':error.message);}
   finally{document.getElementById('paymentSubmit').disabled=false;}
 }
 
