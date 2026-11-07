@@ -69,8 +69,11 @@ async function load(){
     const snap=await getDoc(doc(db,'shops',shopId));
     if(!snap.exists()||snap.data().approved!==true){status.textContent='This shop is unavailable or has not been approved yet.';return;}
     const shop=snap.data();
-    const settingsSnap=await getDoc(doc(db,'paymentSettings','public'));
-    const enforcePaidListing=settingsSnap.exists()&&settingsSnap.data().enforcePaidListing===true;
+    let enforcePaidListing=false;
+    try{
+      const settingsSnap=await getDoc(doc(db,'paymentSettings','public'));
+      enforcePaidListing=settingsSnap.exists()&&settingsSnap.data().enforcePaidListing===true;
+    }catch(settingsError){console.warn('Payment settings unavailable; retaining current approved shop visibility until rules are deployed.',settingsError.code);}
     const listingExpiry=shop.listingPaidUntil?.toDate?shop.listingPaidUntil.toDate():null;
     if(enforcePaidListing&&(!listingExpiry||listingExpiry.getTime()<=Date.now())){status.textContent='This shop listing is not currently active.';return;}
     const premiumExpiry=shop.premiumUntil?.toDate?shop.premiumUntil.toDate():null;
