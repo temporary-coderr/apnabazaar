@@ -119,6 +119,7 @@ async function loadPaymentSettings(){
     document.getElementById('listingAmount').value=data.listingAmount??300;
     document.getElementById('premiumAmount').value=data.premiumAmount??400;
     document.getElementById('bannerAmount').value=data.bannerAmount??2000;
+    document.getElementById('enforcePaidListing').checked=data.enforcePaidListing===true;
     const preview=document.getElementById('upiQrPreview');
     if(typeof data.qrImage==='string'&&data.qrImage.startsWith('https://res.cloudinary.com/')){
       preview.src=data.qrImage;preview.hidden=false;
@@ -131,6 +132,7 @@ window.savePaymentSettings=async()=>{
   const listingAmount=Number(document.getElementById('listingAmount').value);
   const premiumAmount=Number(document.getElementById('premiumAmount').value);
   const bannerAmount=Number(document.getElementById('bannerAmount').value);
+  const enforcePaidListing=document.getElementById('enforcePaidListing').checked;
   const file=document.getElementById('upiQrFile').files[0];
   if(!/^[A-Za-z0-9._-]{2,100}@[A-Za-z0-9._-]{2,50}$/.test(upiId))return status.textContent='Enter a valid UPI ID (example@upi).';
   if([listingAmount,premiumAmount,bannerAmount].some(v=>!Number.isSafeInteger(v)||v<=0))return status.textContent='All plan prices must be positive whole rupee amounts.';
@@ -142,7 +144,7 @@ window.savePaymentSettings=async()=>{
       status.textContent='Uploading UPI QR…';
       qrImage=await uploadToCloudinary(file,'lokmart/payment-settings');
     }
-    await setDoc(doc(db,'paymentSettings','public'),{upiId,listingAmount,premiumAmount,bannerAmount,qrImage,updatedAt:serverTimestamp(),updatedBy:auth.currentUser.uid});
+    await setDoc(doc(db,'paymentSettings','public'),{upiId,listingAmount,premiumAmount,bannerAmount,enforcePaidListing,qrImage,updatedAt:serverTimestamp(),updatedBy:auth.currentUser.uid});
     status.textContent='Payment settings saved.';
     await loadPaymentSettings();
   }catch(error){status.textContent='Save failed: '+error.message;}
@@ -637,6 +639,7 @@ window.uploadCsv=async()=>{
     <h3>💳 UPI Payment Settings</h3>
     <p class="small">Set the UPI ID, optional QR image, and plan prices. Owners submit UTRs and screenshots; only approve after checking the transaction in your bank / UPI app.</p>
     <input id="upiId" class="input" placeholder="UPI ID (example@upi)">
+    <label class="toggle"><input id="enforcePaidListing" type="checkbox"> Require an active ₹ listing payment before public listing</label>
     <div class="grid">
       <input id="listingAmount" class="input" type="number" min="1" step="1" placeholder="Listing price (₹)">
       <input id="premiumAmount" class="input" type="number" min="1" step="1" placeholder="Premium price (₹)">
