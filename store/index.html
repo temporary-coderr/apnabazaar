@@ -40,7 +40,7 @@ footer{padding:26px 0;color:var(--muted);font-size:12px}
 </main>
 <script type="module">
 import { db } from '../js/firebase-config.js';
-import { doc, getDoc, collection, query, where, getDocs, setDoc, updateDoc, increment } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
+import { doc, getDoc, collection, query, where, getDocs, setDoc, increment } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
 
 const params=new URLSearchParams(location.search);
 const shopId=params.get('id');
@@ -60,9 +60,7 @@ async function track(field){
   if(!shopId)return;
   try{
     const ref=doc(db,'shopAnalytics',shopId);
-    const snap=await getDoc(ref);
-    if(snap.exists())await updateDoc(ref,{[field]:increment(1)});
-    else await setDoc(ref,{[field]:1});
+    await setDoc(ref,{[field]:increment(1)},{merge:true});
   }catch(error){console.debug('Analytics unavailable:',error.code||error.message);}
 }
 async function load(){
