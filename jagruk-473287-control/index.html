@@ -95,7 +95,7 @@ onAuthStateChanged(auth, async (user)=>{
     await signOut(auth);
     return;
   }
-  
+
   document.getElementById('loginBox').style.display='none';
   document.getElementById('adminBox').style.display='block';
   document.getElementById('adminEmailShow').textContent = user.email;
@@ -307,10 +307,10 @@ function renderShops(filter=''){
             <input class="input" id="edit-bannerfile-${shop.id}" type="file" accept="image/*"/>
           </div>
           <div style="display:flex;gap:10px;flex-wrap:wrap;margin:6px 0;">
-            
-            
-            
-            
+
+
+
+
             <label class="toggle"><input type="checkbox" id="edit-approved-${shop.id}" ${shop.approved?'checked':''}/> Approved (Show to customers)</label>
           </div>
           <div class="preview" id="edit-preview-${shop.id}"><img id="edit-img-${shop.id}"/></div>
@@ -371,7 +371,7 @@ window.saveEdit = async(id)=>{
     ]);
     if(emailMatches.docs.some(match=>match.id!==id))throw new Error('Owner email already belongs to another shop.');
     if(phoneMatches.docs.some(match=>match.id!==id))throw new Error('Mobile number already belongs to another shop.');
-    
+
     let bannerUrl = allShops.find(x=>x.id===id)?.bannerImage || '';
     if(file){
       statusEl.textContent='☁️ Uploading to Cloudinary tizekip0...';
@@ -384,7 +384,7 @@ window.saveEdit = async(id)=>{
       updatedAt: serverTimestamp()
     };
     if(bannerUrl) updateData.bannerImage = bannerUrl;
-    
+
     await updateDoc(doc(db,"shops",id), updateData);
     await setDoc(doc(db,"shopPrivate",id),{ownerEmail:email.toLowerCase()},{merge:true});
     // Update local
@@ -425,13 +425,13 @@ window.createShop = async()=>{
   const address=document.getElementById('newAddress').value.trim();
   const price=Number(document.getElementById('newPrice').value);
   const file=document.getElementById('newBannerFile').files[0];
-  
+
   if(!name||!ownerEmail||!ownerPass||!phone) return alert('Fill Name, Owner Email, Password, Mobile - Required!');
   if(ownerPass.length<6) return alert('Password must be 6+ characters');
   if(phone.length!==10) return alert('Enter a valid 10-digit mobile number.');
   if(!Number.isFinite(price)||price<0) return alert('Enter a valid non-negative premium price.');
   if(file && (!file.type.startsWith('image/') || file.size>5*1024*1024)) return alert('Choose an image smaller than 5 MB.');
-  
+
   const statusEl=document.getElementById('createStatus');
   statusEl.textContent='Checking unique...';
   statusEl.style.color='#FF6B2C';
@@ -442,11 +442,11 @@ window.createShop = async()=>{
       getDocs(query(collection(db,"shops"),where("ownerEmail","==",ownerEmail)))
     ]);
     if(!emailSnap.empty||!legacyEmailSnap.empty) throw new Error('Owner Email already exists! Use different email.');
-    
+
     const phoneQuery = query(collection(db,"shops"), where("phone","==",phone));
     const phoneSnap = await getDocs(phoneQuery);
     if(!phoneSnap.empty) throw new Error('Mobile number already exists! Use different mobile.');
-    
+
     statusEl.textContent='Creating owner account...';
     // Create auth user via secondary app to not logout admin
     const secondaryApp = initializeApp(firebaseConfig, "secondary-"+Date.now());
@@ -466,7 +466,7 @@ window.createShop = async()=>{
       }
     }
     try{ await deleteApp(secondaryApp); }catch(e){}
-    
+
     statusEl.textContent='Creating shop...';
     const shopData = {
       name,
@@ -494,12 +494,12 @@ window.createShop = async()=>{
       const bannerUrl=await uploadToCloudinary(file,`desi-bazaar/shops/${docRef.id}/banner`);
       await updateDoc(doc(db,"shops",docRef.id),{bannerImage:bannerUrl});
     }
-    
+
     // If banner uploaded to temp, re-upload to correct folder? Keep as is for simplicity - URL valid
-    
+
     statusEl.textContent=`✅ Shop created! ID: ${docRef.id}. Now click APPROVE to make it live!`;
     statusEl.style.color='green';
-    
+
     // Reset form
     document.getElementById('newName').value='';
     document.getElementById('newOwnerEmail').value='';
@@ -507,7 +507,7 @@ window.createShop = async()=>{
     document.getElementById('newPhone').value='';
     document.getElementById('newBannerFile').value='';
     document.getElementById('newPreview').style.display='none';
-    
+
     await loadShops();
   }catch(e){
     statusEl.textContent='❌ '+e.message;
