@@ -69,6 +69,8 @@ async function load(){
     const snap=await getDoc(doc(db,'shops',shopId));
     if(!snap.exists()||snap.data().approved!==true){status.textContent='This shop is unavailable or has not been approved yet.';return;}
     const shop=snap.data();
+    const listingExpiry=shop.listingPaidUntil?.toDate?shop.listingPaidUntil.toDate():null;
+    if(!listingExpiry||listingExpiry.getTime()<=Date.now()){status.textContent='This shop listing is not currently active.';return;}
     const premiumExpiry=shop.premiumUntil?.toDate?shop.premiumUntil.toDate():null;
     const premiumActive=shop.isPremium===true&&shop.subscriptionStatus==='active'&&premiumExpiry&&premiumExpiry.getTime()>Date.now();
     el('shopName').textContent=shop.name||'Local shop';
