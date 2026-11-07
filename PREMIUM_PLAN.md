@@ -7,7 +7,7 @@ Lokmart is a local discovery and shop-listing marketplace. It does not process c
 | Plan | Default price | Duration | What it does |
 |---|---:|---:|---|
 | Shop listing | ₹300 | 30 days | Keeps the approved shop visible in the public directory |
-| Premium features | ₹400 | 30 days | Enables premium shop actions, social links, map / WhatsApp actions, verified badge, and private shop analytics |
+| Premium features | ₹400 | 30 days | Enables premium shop actions, social links, map / WhatsApp actions, and private shop analytics. A verified badge is granted only after a separate admin review. |
 | Banner advertisement | ₹2,000 | 30 days | Enables paid banner placement / priority promotion |
 
 The administrator can change all three prices in the authenticated admin panel. The shop owner dashboard reads the current prices from Firestore; it does not accept a price typed by the owner.
