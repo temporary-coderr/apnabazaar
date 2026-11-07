@@ -13,10 +13,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
           node-version: 22
       - name: Check patch whitespace
-        run: git diff --check HEAD^ HEAD
+        run: git diff --check origin/main...HEAD
       - name: Validate JavaScript and JSON
         run: node scripts/validate.mjs
