@@ -74,13 +74,13 @@ service cloud.firestore {
           (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['updatedAt']) ||
             request.resource.data.updatedAt is timestamp) &&
           (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['instagram']) ||
-            request.resource.data.instagram.matches('https://.*')) &&
+            (request.resource.data.instagram == '' || request.resource.data.instagram.matches('https://.*'))) &&
           (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['facebook']) ||
-            request.resource.data.facebook.matches('https://.*')) &&
+            (request.resource.data.facebook == '' || request.resource.data.facebook.matches('https://.*'))) &&
           (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['youtube']) ||
-            request.resource.data.youtube.matches('https://.*')) &&
+            (request.resource.data.youtube == '' || request.resource.data.youtube.matches('https://.*'))) &&
           (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['website']) ||
-            request.resource.data.website.matches('https://.*'))) ||
+            (request.resource.data.website == '' || request.resource.data.website.matches('https://.*')))) ||
         (request.resource.data.diff(resource.data).affectedKeys().hasOnly([
             'productCount', 'lastAddedProductId'
           ]) &&
