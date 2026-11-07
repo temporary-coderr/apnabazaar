@@ -67,7 +67,7 @@
 </footer>
 </div>
 <script type="module">
-import { firebaseConfig } from './js/firebase-config.js';
+import { firebaseConfig } from '../js/firebase-config.js';
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
 import { getFirestore, collection, query, where, getDocs, doc, updateDoc, increment } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 const app=initializeApp(firebaseConfig); const db=getFirestore(app);
