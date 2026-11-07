@@ -62,6 +62,9 @@ const db = getFirestore(app);
 
 let allShops=[];
 let activeCat='All';
+const unexpired=ts=>!!ts&&typeof ts.toDate==='function'&&ts.toDate().getTime()>Date.now();
+const premiumActive=shop=>shop.isPremium===true&&shop.subscriptionStatus==='active'&&unexpired(shop.premiumUntil);
+const bannerActive=shop=>shop.isBannerAd===true&&unexpired(shop.bannerUntil);
 let deferredInstallPrompt=null;
 
 async function loadShops(){
@@ -71,8 +74,8 @@ async function loadShops(){
     const snap = await getDocs(q);
     allShops = snap.docs.map(d=>({id:d.id,...d.data()}));
     allShops.sort((a,b)=>{
-      const scoreA=(a.isBannerAd?1000:0)+(a.isPopular?500:0)+(a.isPremium?200:0);
-      const scoreB=(b.isBannerAd?1000:0)+(b.isPopular?500:0)+(b.isPremium?200:0);
+      const scoreA=(bannerActive(a)?1000:0)+(a.isPopular?500:0)+(premiumActive(a)?200:0);
+      const scoreB=(bannerActive(b)?1000:0)+(b.isPopular?500:0)+(premiumActive(b)?200:0);
       return scoreB-scoreA;
     });
     document.getElementById('status').textContent=`${allShops.length} shops • Click banner to view products`;
@@ -121,7 +124,7 @@ function render(){
     meta.className='shop-meta';
     meta.textContent=`📍 ${shop.area||'Jaora'} • ${shop.category||'General'}`;
     body.append(name,meta);
-    if(shop.isPremium){const badge=document.createElement('span');badge.className='badge badge-premium';badge.textContent='Premium';body.appendChild(badge);}
+    if(premiumActive(shop)){const badge=document.createElement('span');badge.className='badge badge-premium';badge.textContent='Premium';body.appendChild(badge);}
     if(shop.isPopular){const badge=document.createElement('span');badge.className='badge badge-popular';badge.textContent='Popular';body.appendChild(badge);}
     el.appendChild(body);
     grid.appendChild(el);
