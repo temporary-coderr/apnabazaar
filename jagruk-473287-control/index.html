@@ -68,6 +68,8 @@ let allShops = [];
 const escapeHtml=value=>String(value??'').replace(/[&<>"']/g,char=>({
   '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
 }[char]));
+const premiumIsActive=shop=>shop.isPremium===true&&shop.subscriptionStatus==='active'&&!!shop.premiumUntil?.toDate&&shop.premiumUntil.toDate().getTime()>Date.now();
+const bannerIsActive=shop=>shop.isBannerAd===true&&!!shop.bannerUntil?.toDate&&shop.bannerUntil.toDate().getTime()>Date.now();
 
 // SECURE AUTH CHECK - No email exposed in code! Only Firebase Auth
 onAuthStateChanged(auth, async (user)=>{
@@ -237,10 +239,10 @@ async function loadShops(){
   // Sort: pending first, then premium, then name
   allShops.sort((a,b)=>{
     if(a.approved!==b.approved) return a.approved ? 1 : -1;
-    if((b.isPremium?1:0)!==(a.isPremium?1:0)) return (b.isPremium?1:0)-(a.isPremium?1:0);
+    if((b.isPremium?1:0)!==(a.isPremium?1:0)) return (premiumIsActive(b)?1:0)-(premiumIsActive(a)?1:0);
     return (a.name||'').localeCompare(b.name||'');
   });
-  status.textContent = `Total: ${allShops.length} | Pending: ${allShops.filter(s=>!s.approved).length} | Premium: ${allShops.filter(s=>s.isPremium).length} | Views: ${allShops.reduce((a,b)=>a+(b.views||0),0)}`;
+  status.textContent = `Total: ${allShops.length} | Pending: ${allShops.filter(s=>!s.approved).length} | Premium: ${allShops.filter(premiumIsActive).length} | Views: ${allShops.reduce((a,b)=>a+(b.views||0),0)}`;
   renderShops();
   document.getElementById('totalShops').textContent = allShops.length;
   document.getElementById('pendingShops').textContent = allShops.filter(s=>!s.approved).length;
@@ -271,9 +273,9 @@ function renderShops(filter=''){
     const banner = typeof shop.bannerImage==='string' && shop.bannerImage.startsWith('https://res.cloudinary.com/')
       ? shop.bannerImage : '';
     const approvedBadge = shop.approved ? `<span class="badge badge-approved">APPROVED</span>` : `<span class="badge badge-pending">PENDING APPROVAL</span>`;
-    const premiumBadge = shop.isPremium ? `<span class="badge badge-premium">PREMIUM Rs${escapeHtml(shop.premiumPrice||500)}</span>` : `<span class="badge" style="background:#F3F4F6;color:#6B7280;">FREE</span>`;
+    const premiumBadge = premiumIsActive(shop) ? `<span class="badge badge-premium">PREMIUM Rs${escapeHtml(shop.premiumPrice||500)}</span>` : `<span class="badge" style="background:#F3F4F6;color:#6B7280;">FREE</span>`;
     const popularBadge = shop.isPopular ? `<span class="badge badge-popular">POPULAR Rs1500</span>` : '';
-    const bannerBadge = shop.isBannerAd ? `<span class="badge badge-banner">BANNER Rs2000</span>` : '';
+    const bannerBadge = bannerIsActive(shop) ? `<span class="badge badge-banner">BANNER Rs2000</span>` : '';
     el.innerHTML = `
       ${banner?`<img src="${escapeHtml(banner)}" alt="" onerror="this.style.display='none'"/>`:'<div style="width:90px;height:90px;border-radius:12px;background:var(--cream);display:grid;place-items:center;">🏪</div>'}
       <div style="flex:1;min-width:0;">
