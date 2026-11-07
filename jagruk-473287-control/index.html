@@ -183,7 +183,10 @@ window.approvePayment=async(paymentId)=>{
       const shopRef=doc(db,'shops',payment.shopId);
       const shopSnap=await transaction.get(shopRef);
       if(!shopSnap.exists()||shopSnap.data().ownerUid!==payment.ownerUid)throw new Error('Payment does not match this shop owner.');
-      const expiry=Timestamp.fromMillis(Date.now()+30*24*60*60*1000);
+      const expiryField=payment.planId==='listing'?'listingPaidUntil':payment.planId==='premium'?'premiumUntil':'bannerUntil';
+      const existingExpiry=shopSnap.data()[expiryField];
+      const expiryBase=existingExpiry?.toMillis&&existingExpiry.toMillis()>Date.now()?existingExpiry.toMillis():Date.now();
+      const expiry=Timestamp.fromMillis(expiryBase+30*24*60*60*1000);
       const shopUpdate={updatedAt:serverTimestamp()};
       if(payment.planId==='listing'){
         shopUpdate.listingPaidUntil=expiry;shopUpdate.listingPaymentStatus='active';
