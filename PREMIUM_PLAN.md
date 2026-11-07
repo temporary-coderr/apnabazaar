@@ -27,5 +27,5 @@ No Razorpay, payment gateway, automated UPI collection, or automatic activation 
 
 - Firestore rules authorize payment creation only for the authenticated owner of the linked shop, enforce the configured plan amount, and allow only admins to review or update payment records.
 - `premiumUntil`, `listingPaidUntil`, and `bannerUntil` store plan expiry timestamps.
-- Existing shops with no `listingPaidUntil` will not appear in the public directory until a listing payment is approved.
+- The admin can enable **Require an active paid listing** after existing shops have been migrated or grandfathered. When enabled, shops without a current `listingPaidUntil` are hidden from public listing pages.
 - Publishing `firestore.rules` to Firebase is a separate manual deployment step; committing the file to GitHub does not deploy it.
