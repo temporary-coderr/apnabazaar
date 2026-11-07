@@ -35,7 +35,7 @@ hr{border:0;border-top:1px solid var(--border);margin:12px 0}
 <script type="module">
 import { initializeApp, deleteApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore, collection, query, where, getDocs, doc, getDoc, setDoc, updateDoc, deleteDoc, deleteField, addDoc, serverTimestamp, writeBatch } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, collection, query, where, getDocs, doc, getDoc, setDoc, updateDoc, deleteDoc, deleteField, addDoc, serverTimestamp, writeBatch, runTransaction, Timestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyBtcdBS75tgYJ5W1wilHT9y4rNI1LzUAHI",
@@ -98,6 +98,7 @@ onAuthStateChanged(auth, async (user)=>{
   document.getElementById('adminBox').style.display='block';
   document.getElementById('adminEmailShow').textContent = user.email;
   await loadShops();
+  await Promise.all([loadPaymentSettings(),loadPayments()]);
 });
 
 window.doLogin = async()=>{
@@ -107,6 +108,102 @@ window.doLogin = async()=>{
   try{ await signInWithEmailAndPassword(auth,e,p); }catch(err){ document.getElementById('loginStatus').textContent='Login failed: '+err.message; }
 }
 window.doLogout = async()=>{ await signOut(auth); location.reload(); }
+
+async function loadPaymentSettings(){
+  try{
+    const snap=await getDoc(doc(db,'paymentSettings','public'));
+    const data=snap.exists()?snap.data():{};
+    document.getElementById('upiId').value=data.upiId||'';
+    document.getElementById('listingAmount').value=data.listingAmount??300;
+    document.getElementById('premiumAmount').value=data.premiumAmount??400;
+    document.getElementById('bannerAmount').value=data.bannerAmount??2000;
+    const preview=document.getElementById('upiQrPreview');
+    if(typeof data.qrImage==='string'&&data.qrImage.startsWith('https://res.cloudinary.com/')){
+      preview.src=data.qrImage;preview.hidden=false;
+    }
+  }catch(error){document.getElementById('paymentSettingsStatus').textContent='Could not load settings: '+error.message;}
+}
+window.savePaymentSettings=async()=>{
+  const status=document.getElementById('paymentSettingsStatus');
+  const upiId=document.getElementById('upiId').value.trim();
+  const listingAmount=Number(document.getElementById('listingAmount').value);
+  const premiumAmount=Number(document.getElementById('premiumAmount').value);
+  const bannerAmount=Number(document.getElementById('bannerAmount').value);
+  const file=document.getElementById('upiQrFile').files[0];
+  if(!/^[A-Za-z0-9._-]{2,100}@[A-Za-z0-9._-]{2,50}$/.test(upiId))return status.textContent='Enter a valid UPI ID (example@upi).';
+  if([listingAmount,premiumAmount,bannerAmount].some(v=>!Number.isSafeInteger(v)||v<=0))return status.textContent='All plan prices must be positive whole rupee amounts.';
+  try{
+    status.textContent='Saving payment settings…';
+    const previous=await getDoc(doc(db,'paymentSettings','public'));
+    let qrImage=previous.exists()?previous.data().qrImage||'':'';
+    if(file){
+      status.textContent='Uploading UPI QR…';
+      qrImage=await uploadToCloudinary(file,'lokmart/payment-settings');
+    }
+    await setDoc(doc(db,'paymentSettings','public'),{upiId,listingAmount,premiumAmount,bannerAmount,qrImage,updatedAt:serverTimestamp(),updatedBy:auth.currentUser.uid});
+    status.textContent='Payment settings saved.';
+    await loadPaymentSettings();
+  }catch(error){status.textContent='Save failed: '+error.message;}
+}
+async function loadPayments(){
+  const list=document.getElementById('paymentsList');
+  if(!list)return;
+  try{
+    const snap=await getDocs(collection(db,'payments'));
+    const payments=snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(a.status==='pending'?-1:1)-(b.status==='pending'?-1:1));
+    list.replaceChildren();
+    if(!payments.length){list.textContent='No payment requests yet.';return;}
+    payments.forEach(payment=>{
+      const card=document.createElement('div');card.className='card';
+      const heading=document.createElement('b');heading.textContent=payment.planId+' · ₹'+payment.amount+' · '+payment.status.toUpperCase();card.appendChild(heading);
+      const details=document.createElement('p');details.className='small';details.textContent='Shop: '+payment.shopId+' | UTR: '+payment.utr+' | Owner UID: '+payment.ownerUid;card.appendChild(details);
+      if(typeof payment.screenshotUrl==='string'&&payment.screenshotUrl.startsWith('https://res.cloudinary.com/')){
+        const link=document.createElement('a');link.href=payment.screenshotUrl;link.target='_blank';link.rel='noopener noreferrer';link.textContent='Open payment screenshot';card.appendChild(link);
+      }
+      if(payment.status==='pending'){
+        const controls=document.createElement('div');controls.style.cssText='display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;';
+        const approve=document.createElement('button');approve.className='btn btn-sm btn-approve';approve.textContent='Approve after bank verification';approve.onclick=()=>approvePayment(payment.id);
+        const reject=document.createElement('button');reject.className='btn btn-sm btn-reject';reject.textContent='Reject';reject.onclick=()=>rejectPayment(payment.id);
+        controls.append(approve,reject);card.appendChild(controls);
+      }
+      list.appendChild(card);
+    });
+  }catch(error){list.textContent='Unable to load payment requests: '+error.message;}
+}
+window.approvePayment=async(paymentId)=>{
+  if(!confirm('Have you independently confirmed this UTR in your bank / UPI app and confirmed the exact amount?'))return;
+  try{
+    await runTransaction(db,async transaction=>{
+      const paymentRef=doc(db,'payments',paymentId);
+      const paymentSnap=await transaction.get(paymentRef);
+      if(!paymentSnap.exists()||paymentSnap.data().status!=='pending')throw new Error('Payment is no longer pending.');
+      const payment=paymentSnap.data();
+      const shopRef=doc(db,'shops',payment.shopId);
+      const shopSnap=await transaction.get(shopRef);
+      if(!shopSnap.exists()||shopSnap.data().ownerUid!==payment.ownerUid)throw new Error('Payment does not match this shop owner.');
+      const expiry=Timestamp.fromMillis(Date.now()+30*24*60*60*1000);
+      const shopUpdate={updatedAt:serverTimestamp()};
+      if(payment.planId==='listing'){
+        shopUpdate.listingPaidUntil=expiry;shopUpdate.listingPaymentStatus='active';
+      }else if(payment.planId==='premium'){
+        shopUpdate.isPremium=true;shopUpdate.subscriptionStatus='active';shopUpdate.premiumUntil=expiry;
+        shopUpdate.premiumPrice=payment.amount;shopUpdate.isVerified=true;
+      }else if(payment.planId==='banner'){
+        shopUpdate.isBannerAd=true;shopUpdate.bannerUntil=expiry;
+      }else throw new Error('Unknown payment plan.');
+      transaction.update(shopRef,shopUpdate);
+      transaction.update(paymentRef,{status:'approved',reviewedAt:serverTimestamp(),reviewedBy:auth.currentUser.uid});
+    });
+    await Promise.all([loadPayments(),loadShops()]);
+  }catch(error){alert('Approval failed: '+error.message);}
+}
+window.rejectPayment=async(paymentId)=>{
+  const reason=prompt('Reason for rejection (optional):')||'Not verified';
+  try{
+    await updateDoc(doc(db,'payments',paymentId),{status:'rejected',rejectionReason:reason.slice(0,240),reviewedAt:serverTimestamp(),reviewedBy:auth.currentUser.uid});
+    await loadPayments();
+  }catch(error){alert('Rejection failed: '+error.message);}
+}
 
 async function loadShops(){
   const status = document.getElementById('loadStatus');
@@ -541,6 +638,26 @@ window.uploadCsv=async()=>{
       <input id="searchBox" class="input" placeholder="Search by name, email, mobile..." oninput="filterShops()"/>
       <p id="loadStatus" class="small"></p>
     </div>
+  </div>
+
+  <div class="card">
+    <h3>💳 UPI Payment Settings</h3>
+    <p class="small">Set the UPI ID, optional QR image, and plan prices. Owners submit UTRs and screenshots; only approve after checking the transaction in your bank / UPI app.</p>
+    <input id="upiId" class="input" placeholder="UPI ID (example@upi)">
+    <div class="grid">
+      <input id="listingAmount" class="input" type="number" min="1" step="1" placeholder="Listing price (₹)">
+      <input id="premiumAmount" class="input" type="number" min="1" step="1" placeholder="Premium price (₹)">
+      <input id="bannerAmount" class="input" type="number" min="1" step="1" placeholder="Banner ad price (₹)">
+      <input id="upiQrFile" class="input" type="file" accept="image/*">
+    </div>
+    <img id="upiQrPreview" alt="UPI QR preview" hidden style="width:180px;max-width:100%;border:1px solid #eee;border-radius:10px;margin:8px 0">
+    <button class="btn" onclick="savePaymentSettings()">Save UPI settings</button>
+    <p id="paymentSettingsStatus" class="small" role="status"></p>
+  </div>
+  <div class="card">
+    <h3>🧾 Manual Payment Verification</h3>
+    <p class="small">Open each screenshot and independently verify the UTR and exact amount in your bank / UPI app before approving. Approval activates the selected 30-day plan.</p>
+    <div id="paymentsList">Loading payment requests…</div>
   </div>
 
   <div class="card" style="border:2px solid #FF6B2C;">
