@@ -113,7 +113,7 @@ async function renderShop(){
   const status=document.getElementById('status');
   const plan=document.createElement('span');
   plan.className=`badge ${isPremium?'badge-premium':'badge-free'}`;
-  plan.textContent=isPremium?`Premium Rs ${Number(currentShop.premiumPrice)||500}/week - Active`:'Free Plan - Banner + 10 products';
+  plan.textContent=isPremium?`Premium active until ${premiumExpiry.toLocaleDateString()}`:'Free Plan - Banner + 10 products';
   status.replaceChildren(plan);
   const approval=document.createElement('span');
   approval.style.cssText=`font-size:12px;color:${currentShop.approved?'green':'orange'}`;
