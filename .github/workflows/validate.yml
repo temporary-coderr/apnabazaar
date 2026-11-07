@@ -16,5 +16,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
+      - name: Check patch whitespace
+        run: git diff --check HEAD^ HEAD
       - name: Validate JavaScript and JSON
         run: node scripts/validate.mjs
