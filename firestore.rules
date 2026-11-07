@@ -24,7 +24,9 @@ service cloud.firestore {
     function premiumOwner(shopId) {
       return ownsShop(shopId) &&
         shop(shopId).data.isPremium == true &&
-        shop(shopId).data.subscriptionStatus == 'active';
+        shop(shopId).data.subscriptionStatus == 'active' &&
+        shop(shopId).data.premiumUntil is timestamp &&
+        shop(shopId).data.premiumUntil > request.time;
     }
 
     function validCloudinaryImage(value) {
