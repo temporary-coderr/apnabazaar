@@ -103,7 +103,8 @@ onAuthStateChanged(auth, async (user)=>{
 
 async function renderShop(){
   if(!currentShop) return;
-  const isPremium = currentShop.isPremium && currentShop.subscriptionStatus==='active';
+  const premiumExpiry=currentShop.premiumUntil?.toDate ? currentShop.premiumUntil.toDate() : null;
+  const isPremium = currentShop.isPremium===true && currentShop.subscriptionStatus==='active' && premiumExpiry && premiumExpiry.getTime()>Date.now();
   const freeLimit = 10;
   document.getElementById('shopName').textContent = currentShop.name||'Your Shop';
   document.getElementById('shopPhone').textContent = currentShop.phone||'';
@@ -309,7 +310,8 @@ window.submitPayment=async()=>{
 }
 
 window.saveSocialLinks=async()=>{
-  if(!currentShop||!(currentShop.isPremium&&currentShop.subscriptionStatus==='active'))return;
+  const expiry=currentShop?.premiumUntil?.toDate ? currentShop.premiumUntil.toDate() : null;
+  if(!currentShop||!(currentShop.isPremium===true&&currentShop.subscriptionStatus==='active'&&expiry&&expiry.getTime()>Date.now()))return;
   const fields=['instagram','facebook','youtube','website'];
   const links={};
   for(const field of fields){
@@ -347,10 +349,10 @@ window.uploadBanner = async()=>{
 window.uploadProduct = async()=>{
   const file = document.getElementById('productFile').files[0];
   const name = document.getElementById('productName').value.trim();
-  const price = document.getElementById('productPrice').value.trim();
+  const priceText = document.getElementById('productPrice').value.trim();
   if(!file || !name) return alert('Enter product name and select photo');
   if(name.length>120) return alert('Product name must be 120 characters or fewer.');
-  if(price && (!Number.isFinite(Number(price)) || Number(price)<0)) return alert('Enter a valid non-negative price.');
+  if(priceText && (!Number.isFinite(Number(priceText)) || Number(priceText)<0)) return alert('Enter a valid non-negative price.');
   if(!currentShop) return alert('Shop not loaded');
   const isPremium = currentShop.isPremium && currentShop.subscriptionStatus==='active';
   if(!isPremium && productCount >= 10) return alert('Free limit 10 reached! Upgrade to Premium');
@@ -361,14 +363,15 @@ window.uploadProduct = async()=>{
   try{
     const url = await uploadToCloudinary(file, `desi-bazaar/shops/${currentShop.id}/products`);
     const productRef=doc(collection(db,"products"));
-    const product={shopId:currentShop.id,name,price,image:url,createdAt:new Date()};
+    const product={shopId:currentShop.id,name,image:url,createdAt:new Date(),...(priceText!==''?{price:Number(priceText)}:{})};
     await runTransaction(db,async transaction=>{
       const shopRef=doc(db,"shops",currentShop.id);
       const shopSnap=await transaction.get(shopRef);
       if(!shopSnap.exists())throw new Error('Shop no longer exists.');
       const freshShop=shopSnap.data();
       const count=Number(freshShop.productCount);
-      const premium=freshShop.isPremium===true&&freshShop.subscriptionStatus==='active';
+      const expiry=freshShop.premiumUntil?.toDate ? freshShop.premiumUntil.toDate() : null;
+      const premium=freshShop.isPremium===true&&freshShop.subscriptionStatus==='active'&&expiry&&expiry.getTime()>Date.now();
       if(!Number.isInteger(count)||count<0)throw new Error('Shop product count needs administrator migration before uploads can continue.');
       if(!premium&&count>=10)throw new Error('Free plan limit of 10 products reached.');
       transaction.update(shopRef,{productCount:count+1,lastAddedProductId:productRef.id});
