@@ -192,7 +192,7 @@ window.approvePayment=async(paymentId)=>{
         shopUpdate.listingPaidUntil=expiry;shopUpdate.listingPaymentStatus='active';
       }else if(payment.planId==='premium'){
         shopUpdate.isPremium=true;shopUpdate.subscriptionStatus='active';shopUpdate.premiumUntil=expiry;
-        shopUpdate.premiumPrice=payment.amount;shopUpdate.isVerified=true;
+        shopUpdate.premiumPrice=payment.amount;
       }else if(payment.planId==='banner'){
         shopUpdate.isBannerAd=true;shopUpdate.bannerUntil=expiry;
       }else throw new Error('Unknown payment plan.');
